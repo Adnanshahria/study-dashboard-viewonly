@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google" content="notranslate" />
+    <meta name="theme-color" id="theme-color-meta" content="#1c1c1c" />
+    <title>AS Study Dashboard (View-Only)</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-main: #f8f7f2; --bg-card: #ffffff; --bg-header: rgba(248,247,242,0.9);
+            --text-primary: #3b2b22; --text-secondary: #1f2937; --text-muted: #6b6b6b;
+            --border-primary: #e6d7c9; --border-secondary: #f3ece6;
+            --progress-track: #d1d5db; /* Tailwind gray-300 */
+        }
+        html[data-theme="dark"] {
+            --bg-main: #1c1c1c; --bg-card: #2a2a2a; --bg-header: rgba(28, 28, 28, 0.85);
+            --text-primary: #e5e7eb; --text-secondary: #f3f4f6; --text-muted: #9ca3af;
+            --border-primary: #4b5563; --border-secondary: #374151;
+            --progress-track: #4b5563; /* Tailwind gray-600 */
+        }
+
+        html, body { height: 100%; margin: 0; background: var(--bg-main); color: var(--text-primary); font-family: 'Noto Sans Bengali', sans-serif; -webkit-font-smoothing: antialiased; }
+        .card { background: var(--bg-card); border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); border: 1px solid var(--border-secondary); transition: padding 0.2s ease; }
+        .progress-bar-container { background-color: var(--progress-track); border-radius: 9999px; overflow: hidden; height: 0.5rem; } /* h-2 */
+        .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.4s ease-out; }
+
+        .pb-gradient-mint { background: linear-gradient(90deg, #6ee7b7, #34d399); }
+        .pb-gradient-sky { background: linear-gradient(90deg, #7dd3fc, #38bdf8); }
+        .pb-gradient-peach { background: linear-gradient(90deg, #fb923c, #f97316); }
+        .pb-gradient-lav { background: linear-gradient(90deg, #c4b5fd, #a78bfa); }
+        .pb-gradient-amber { background: linear-gradient(90deg, #fcd34d, #fbbf24); }
+        .pb-gradient-cyan { background: linear-gradient(90deg, #67e8f9, #22d3ee); }
+        .pb-gradient-rose { background: linear-gradient(90deg, #fb7185, #f43f5e); }
+
+        #countdown-card { background: linear-gradient(135deg, #d90429, #ef233c); box-shadow: 0 10px 25px rgba(217, 4, 41, 0.25); }
+        .countdown-num { font-weight:800; font-size:24px; } .countdown-label { font-size:12px; opacity:0.95; }
+        .subject-progress-svg circle { transition: stroke-dashoffset 0.4s ease-out; }
+        .subject-progress-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 12px; border: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
+        .subject-progress-btn.active { border-color: var(--text-primary); background: var(--bg-main); box-shadow: 0 0 0 2px var(--text-primary); } /* Enhanced Active State */
+
+        .task-status-btn { 
+            --fill: 0%; position: relative; display:inline-flex; align-items:center; justify-content:center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-secondary); background: transparent; 
+            overflow: hidden; z-index: 1; transition: transform .08s ease; 
+            /* --- VIEW-ONLY CHANGES --- */
+            pointer-events: none; /* Disables clicks */
+            cursor: default;
+        }
+        .task-status-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--fill, 0%); background: linear-gradient(90deg, #7dd3fc, #38bdf8); z-index: -1; transition: width .2s ease-out; }
+        .task-status-btn.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
+
+        .note-btn { 
+            /* --- VIEW-ONLY CHANGES --- */
+            display: none; /* Hide note button completely */
+        }
+
+        .info-btn { font-family: sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-primary); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; justify-content: center; align-items: center; transition: all 0.2s; } .info-btn:hover { background: var(--bg-main); transform: scale(1.1); }
+        #info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        #info-modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        #info-modal-content { background: var(--bg-card); padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s; }
+        #info-modal-overlay.visible #info-modal-content { transform: scale(1); }
+        #info-modal-content ul { list-style-type: disc; padding-left: 20px; }
+
+        .status-indicator { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; user-select: none; }
+        .status-indicator.online { background-color: #166534; color: #dcfce7; } .status-indicator.offline { background-color: #991b1b; color: #fee2e2; }
+
+        /* --- Optimize Card Sizes & Mobile Default --- */
+        body.desktop-view { min-width: 1280px; }
+        body:not(.desktop-view) .main-grid { grid-template-columns: 1fr; }
+        body:not(.desktop-view) .right-column { grid-row-start: 1; }
+        body:not(.desktop-view) .card { padding: 14px; }
+        body.desktop-view .card { padding: 20px; }
+        body:not(.desktop-view) h1 { font-size: 1.125rem; }
+        body:not(.desktop-view) h2 { font-size: 1rem; }
+        body:not(.desktop-view) #subject-selector { flex-wrap: wrap; gap: 8px; }
+        body:not(.desktop-view) .subject-progress-svg { width: 56px; height: 56px; }
+        body.desktop-view .subject-progress-svg { width: 64px; height: 64px; }
+        body:not(.desktop-view) .countdown-num { font-size: 20px; }
+        body:not(.desktop-view) .countdown-label { font-size: 11px; }
+        body:not(.desktop-view) #countdown-card { padding: 16px; }
+        body:not(.desktop-view) #header h1 { font-size: 1rem; }
+        body.desktop-view #header h1 { font-size: 1.25rem; }
+        body.desktop-view #selected-subject-main-progress,
+        body.desktop-view #selected-subject-qb-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    </style>
+</head>
+<body class="text-sm">
+    <header id="header" class="sticky top-0 z-30 w-full bg-header border-b border-primary backdrop-blur-sm">
+        <div class="container max-w-screen-xl mx-auto flex justify-between items-center py-2 px-4">
+            <h1 class="text-xl font-bold">AS Study Dashboard (View-Only)</h1>
+            <div class="flex items-center gap-3">
+                <button id="view-toggle-btn" class="text-xs px-2 py-1 border border-primary rounded-md">Toggle View</button>
+                <div id="connection-status" class="status-indicator">...</div>
+                <button id="theme-toggle-btn" title="Change theme">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-container" class="container max-w-screen-xl mx-auto py-4 px-4">
+        <div id="main-content-grid" class="main-grid grid grid-cols-3 gap-5" style="display: none;">
+            <div class="left-column col-span-2 flex flex-col gap-5">
+                <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">বিষয় নির্বাচন <span id="subject-choice-info-btn"></span></h2><div id="subject-selector" class="flex justify-around">Loading...</div></div>
+                <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">নির্বাচিত বিষয়ের অগ্রগতি <span id="main-progress-info-btn"></span></h2><div id="selected-subject-main-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
+                <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">পরীক্ষার অগ্রগতি <span id="exam-progress-info-btn"></span></h2><div id="selected-subject-exam-progress">Loading...</div></div>
+                <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">প্রশ্নব্যাংক অগ্রগতি <span id="qb-progress-info-btn"></span></h2><div id="selected-subject-qb-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
+                <section id="syllabus-shell" class="card"><h2 class="text-base font-bold mb-3">সিলেবাস বিস্তারিত</h2><div id="syllabus-content">Loading...</div></section>
+            </div>
+
+            <div class="right-column col-span-1 grid grid-rows-[min-content,auto] gap-5">
+                <div id="countdown-card" class="card text-white p-5">
+                    <h2 class="text-lg font-bold mb-4 text-center flex justify-between items-center">
+                        <span>Final Countdown</span>
+                        <span id="countdown-info-btn"></span>
+                    </h2>
+                    <div id="countdown" class="flex justify-around">Loading...</div>
+                </div>
+                <div class="flex flex-col gap-5">
+                    <div class="card">
+                        <h2 class="text-base font-bold mb-3 flex justify-between items-center">Global Summary & Composite <span id="global-summary-info-btn"></span></h2>
+                        <div id="syllabus-total-container" class="mb-4">Loading Composite...</div>
+                        <div id="global-summary-container" class="flex flex-col gap-3">Loading Summaries...</div>
+                    </div>
+                    <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">Mini Analytics <span id="analytics-info-btn"></span></h2><div id="analytics-content">Loading...</div></div>
+                </div>
+            </div>
+        </div>
+        <div id="loading-indicator" class="text-center py-10">Initializing Dashboard...</div>
+    </main>
+
+    <div id="info-modal-overlay" role="dialog" aria-modal="true"><div id="info-modal-content"><h3 id="info-modal-title" class="font-bold text-lg mb-2"></h3><p id="info-modal-desc" class="text-muted mb-3 text-sm"></p><div class="mb-2 font-semibold text-sm">গণনাকৃত আইটেম:</div><ul id="info-modal-items" class="text-sm"></ul><button id="info-modal-close" class="mt-4 px-4 py-2 bg-rose-600 text-white rounded-lg w-full">Close</button></div></div>
+    <div id="toast-container" class="fixed right-4 bottom-5 z-50"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        // 'writeBatch' is removed as we are not writing
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // --- Firebase Config (Unchanged) ---
+        const firebaseConfig = {"apiKey":"AIzaSyDTLhIkrW9qk6KPT_gTDibIiJeVwWYTowk","authDomain":"my-study-dashboard.firebaseapp.com","projectId":"my-study-dashboard","storageBucket":"my-study-dashboard.appspot.com","messagingSenderId":"66307909031","appId":"1:66307909031:web:9e724a43c8c11a0ef80282"};
+        let app, db, userDocRef;
+        try { app = initializeApp(firebaseConfig); db = getFirestore(app); userDocRef = doc(db, "users", "as19", "progress", "main"); } catch (e) { console.error("Firebase initialization failed:", e); }
+        
+        // --- IndexedDB & PendingWrites Logic REMOVED ---
+        // This version does not need to cache local changes.
+
+        // --- App State & Data (Unchanged) ---
+        const state = { userData: {}, activeSubject: 'biology', syllabusOpenState: {}, isInitialized: false };
+        const syllabusData = { biology: { name: "জীববিজ্ঞান", chapters: [ { id: 1, name: "কোষ ও এর গঠন", paper: 1 }, { id: 2, name: "কোষ বিভাজন", paper: 1 }, { id: 3, name: "কোষ রসায়ন", paper: 1 }, { id: 4, name: "অণুজীব", paper: 1 }, { id: 5, name: "শৈবাল ও ছত্রাক", paper: 1 }, { id: 6, name: "ব্রায়োফাইটা ও টেরিডোফাইটা", paper: 1 }, { id: 7, name: "নগ্নবীজি ও আবৃতবীজি উদ্ভিদ", paper: 1 }, { id: 8, name: "টিস্যু ও টিস্যুতন্ত্র", paper: 1 }, { id: 9, name: "উদ্ভিদ শরীরতত্ত্ব", paper: 1 }, { id: 10, name: "উদ্ভিদ প্রজনন", paper: 1 }, { id: 11, name: "জীব প্রযুক্তি", paper: 1 }, { id: 12, name: "জীবের পরিবেশ, বিস্তার ও সংরক্ষণ", paper: 1 }, { id: 13, name: "প্রাণির বৈচিত্র্য ও শ্রেণিবিন্যাস", paper: 2 }, { id: 14, name: "প্রাণির পরিচিতি (হাইড্রা)", paper: 2 }, { id: 15, name: "প্রাণির পরিচিতি (ঘাসফড়িং)", paper: 2 }, { id: 16, name: "প্রাণির পরিচিতি (রুই মাছ)", paper: 2 }, { id: 17, name: "মানব শরীরতত্ত্ব: পরিপাক ও শোষণ", paper: 2 }, { id: 18, name: "মানব শরীরতত্ত্ব: রক্ত ও সঞ্চালন", paper: 2 }, { id: 19, name: "মানব শরীরতত্ত্ব: শ্বাসক্রিয়া ও শ্বসন", paper: 2 }, { id: 20, name: "মানব শরীরতত্ত্ব: বর্জ্য ও নিষ্কাশন", paper: 2 }, { id: 21, name: "মানব শরীরতত্ত্ব: চলন ও অঙ্গচালনা", paper: 2 }, { id: 22, name: "মানব শরীরতত্ত্ব: সমন্বয় ও নিয়ন্ত্রণ", paper: 2 }, { id: 23, name: "মানব জীবনের ধারাবাহিকতা", paper: 2 }, { id: 24, name: "মানবদেহের প্রতিরক্ষা", paper: 2 }, { id: 25, name: "জিনতত্ত্ব ও বিবর্তন", paper: 2 }, { id: 26, name: "প্রাণির আচরণ", paper: 2 } ] }, chemistry: { name: "রসায়ন", chapters: [ { id: 1, name: "ল্যাবরেটরির নিরাপদ ব্যবহার", paper: 1 }, { id: 2, name: "গুণগত রসায়ন", paper: 1 }, { id: 3, name: "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন", paper: 1 }, { id: 4, name: "রাসায়নিক পরিবর্তন", paper: 1 }, { id: 5, name: "কর্মমূখী রসায়ন", paper: 1 }, { id: 6, name: "পরিবেশ রসায়ন", paper: 2 }, { id: 7, name: "জৈব রসায়ন", paper: 2 }, { id: 8, name: "পরিমাণগত রসায়ন", paper: 2 }, { id: 9, name: "তড়িৎ রসায়ন", paper: 2 }, { id: 10, name: "অর্থনৈতিক রসায়ন", paper: 2 } ] }, physics: { name: "পদার্থবিজ্ঞান", chapters: [ { id: 1, name: "ভৌত জগত ও পরিমাপ", paper: 1 }, { id: 2, name: "ভেক্টর", paper: 1 }, { id: 3, name: "গতিবিদ্যা", paper: 1 }, { id: 4, name: "নিউটনিয়ান বলবিদ্যা", paper: 1 }, { id: 5, name: "কাজ, শক্তি ও ক্ষমতা", paper: 1 }, { id: 6, name: "মহাকর্ষ ও অভিকর্ষ", paper: 1 }, { id: 7, name: "পদার্থের গাঠনিক ধর্ম", paper: 1 }, { id: 8, name: "পর্যাবৃত্তিক গতি", paper: 1 }, { id: 9, name: "তরঙ্গ", paper: 1 }, { id: 10, name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", paper: 1 }, { id: 11, name: "তাপগতিবিদ্যা", paper: 2 }, { id: 12, name: "স্থির তড়িৎ", paper: 2 }, { id: 13, name: "চল তড়িৎ", paper: 2 }, { id: 14, name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", paper: 2 }, { id: 15, name: "তড়িৎ চৌম্বক আবেশ ও পরিবর্তী প্রবাহ", paper: 2 }, { id: 16, name: "জ্যামিতিক আলোকবিজ্ঞান", paper: 2 }, { id: 17, name: "ভৌত আলোকবিজ্ঞা", paper: 2 }, { id: 18, name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", paper: 2 }, { id: 19, name: "পরমাণুর মডেল এবং নিউক্লিয়ার পদার্থবিজ্ঞান", paper: 2 }, { id: 20, name: "সেমিকন্ডাক্টর ও ইলেকট্রনিকস", paper: 2 }, { id: 21, name: "জ্যোতির্বিজ্ঞান", paper: 2 } ] } };
+        const trackableItems = ["মূল বই", "Class", "Rev Class", "Meditrics", "MQB (Unmesh)", "Retina QB", "Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam", "রিভিশন ১", "রিভিশন ২"];
+        const mainStudyItems = ["মূল বই", "Class", "Meditrics"]; const revisionItems = ["রিভিশন ১", "রিভিশন ২", "Rev Class"]; const examItems = ["Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam"]; const qbItems = ["MQB (Unmesh)", "Retina QB"];
+        const TARGET_DATE_STRING = '2025-12-12'; // Used for countdown info
+
+        // --- Calculation Logic (Unchanged) ---
+        const getRawPercentForStatus = (status) => (typeof status === 'number' && status >= 0 && status <= 4) ? status * 20 : 0;
+        const normalizeRawTo100 = (raw) => raw <= 0 ? 0 : Math.min(100, (raw / 80) * 100);
+        function calculateProgress(subjectKey, itemsToCount) { let currentItems = [...itemsToCount]; if (subjectKey === 'physics') currentItems = currentItems.filter(item => item !== 'মূল বই'); const subjectData = syllabusData[subjectKey]; if (!subjectData || !subjectData.chapters) return { overall: 0, paper1: 0, paper2: 0 }; const mulBoiIndex = trackableItems.indexOf("মূল বই"); const meditricsIndex = trackableItems.indexOf("Meditrics"); const useMaxLogic = currentItems.includes("মূল বই") && currentItems.includes("Meditrics"); let itemIndices = currentItems.map(item => trackableItems.indexOf(item)).filter(i => i >= 0); let p1Sum = 0, p1Count = 0, p2Sum = 0, p2Count = 0; subjectData.chapters.forEach(ch => { let rawSum = 0; let itemsForAvg = itemIndices.length; if (useMaxLogic) { const nonSpecial = itemIndices.filter(i => i !== mulBoiIndex && i !== meditricsIndex); nonSpecial.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); const mulBoiStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${mulBoiIndex}`] ?? 0); const medStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${meditricsIndex}`] ?? 0); rawSum += Math.max(mulBoiStatus, medStatus); itemsForAvg = nonSpecial.length + 1; } else { itemIndices.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); } const normalized = normalizeRawTo100(itemsForAvg > 0 ? rawSum / itemsForAvg : 0); if (ch.paper === 1) { p1Sum += normalized; p1Count++; } else { p2Sum += normalized; p2Count++; } }); const paper1 = p1Count > 0 ? p1Sum / p1Count : 0; const paper2 = p2Count > 0 ? p2Sum / p2Count : 0; const overall = (p1Count + p2Count > 0) ? (p1Sum + p2Sum) / (p1Count + p2Count) : 0; return { overall, paper1, paper2 }; }
+        const calculateComposite = () => { const subjects = Object.keys(syllabusData); if(!subjects.length) return { mainAvg: 0, revAvg: 0, examAvg: 0, qbAvg: 0, composite: 0 }; const mainAvg = calculateGlobalAverage(s => calculateProgress(s, mainStudyItems)).overall; const revAvg = calculateGlobalAverage(s => calculateProgress(s, revisionItems)).overall; const examAvg = calculateGlobalAverage(s => calculateProgress(s, examItems)).overall; const qbAvg = calculateGlobalAverage(s => calculateProgress(s, qbItems)).overall; return { mainAvg, revAvg, examAvg, qbAvg, composite: (mainAvg + revAvg + examAvg + qbAvg) / 4 }; };
+        const calculateGlobalAverage = (fn) => { const subjects = Object.keys(syllabusData); let total = 0; subjects.forEach(key => { total += fn(key).overall; }); return { overall: total / (subjects.length || 1) }; };
+        const findWeakestSubject = () => { const subjects = Object.keys(syllabusData); if (!subjects.length) return null; let weakest = { name: '', score: 101 }; subjects.forEach(key => { const progress = calculateProgress(key, [...mainStudyItems, ...revisionItems, ...examItems, ...qbItems]); if (progress.overall < weakest.score) { weakest = { name: syllabusData[key].name, score: progress.overall }; } }); return weakest; };
+
+        // --- UI Rendering Functions (Unchanged) ---
+        const createInfoButton = (data) => { const btn = document.createElement('button'); btn.className = 'info-btn'; btn.textContent = '?'; Object.entries(data).forEach(([k, v]) => { btn.dataset[k] = Array.isArray(v) ? JSON.stringify(v) : v; }); return btn; };
+        const createProgressBar = (p, color) => `<div class="w-full progress-bar-container"><div class="progress-bar pb-gradient-${color} h-2" style="width: ${p.toFixed(1)}%"></div></div>`;
+        const createBreakdownProgressBar = (data, title, colors=['sky','peach','lav']) => `<div class="flex flex-col gap-2"> <div class="font-bold text-sm">${title}</div> <div class="grid grid-cols-[40px,1fr,45px] items-center gap-2 text-xs"> <span>১ম পত্র</span>${createProgressBar(data.paper1, colors[0])}<span class="text-right font-medium">${data.paper1.toFixed(1)}%</span> <span>২য় পত্র</span>${createProgressBar(data.paper2, colors[1])}<span class="text-right font-medium">${data.paper2.toFixed(1)}%</span> <span class="font-bold">মোট</span>${createProgressBar(data.overall, colors[2])}<span class="text-right font-bold">${data.overall.toFixed(1)}%</span> </div></div>`;
+        const createCircularProgressBar = (p, color) => `<svg class="subject-progress-svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="var(--progress-track)" stroke-width="5" fill="none" /><circle cx="32" cy="32" r="28" stroke="${color}" stroke-width="5" fill="none" stroke-dasharray="${2 * Math.PI * 28}" stroke-dashoffset="${(1 - (p/100)) * 2 * Math.PI * 28}" stroke-linecap="round" /></svg>`;
+        function renderSubjectSelector() { const container = document.getElementById('subject-selector'); if(!container) return; const fragment = document.createDocumentFragment(); const colors = ['#34d399', '#f97316', '#38bdf8']; Object.keys(syllabusData).forEach((key, idx) => { const btn = document.createElement('div'); const isActive = state.activeSubject === key; const progress = calculateProgress(key, mainStudyItems); btn.className = `subject-progress-btn ${isActive ? 'active' : ''}`; btn.dataset.subject = key; btn.innerHTML = `<div class="relative">${createCircularProgressBar(progress.overall, colors[idx % colors.length])}<div class="absolute inset-0 flex items-center justify-center font-bold text-primary">${progress.overall.toFixed(0)}%</div></div><span class="font-semibold text-sm">${syllabusData[key].name}</span>`; btn.onclick = () => { if (state.activeSubject !== key) { state.activeSubject = key; renderAll(); }}; fragment.appendChild(btn); }); container.innerHTML = ''; container.appendChild(fragment); }
+        function renderProgressCards() {
+            const subject = state.activeSubject;
+            const mainProgEl = document.getElementById('selected-subject-main-progress'); if(mainProgEl) mainProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, mainStudyItems), 'মূল বই ও লেকচার') + createBreakdownProgressBar(calculateProgress(subject, revisionItems), 'রিভিশন', ['rose', 'amber', 'lav']);
+            const examProgEl = document.getElementById('selected-subject-exam-progress'); if(examProgEl) examProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, examItems), 'সকল পরীক্ষা', ['peach', 'cyan', 'mint']);
+            const qbProgEl = document.getElementById('selected-subject-qb-progress'); if(qbProgEl) qbProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, ["MQB (Unmesh)"]), 'MQB (Unmesh)', ['amber', 'amber', 'amber']) + createBreakdownProgressBar(calculateProgress(subject, ["Retina QB"]), 'Retina QB', ['cyan', 'cyan', 'cyan']);
+
+            const composite = calculateComposite();
+            const totalEl = document.getElementById('syllabus-total-container');
+            if(totalEl) {
+                totalEl.innerHTML = `<div class="flex flex-col gap-2">
+                    <div class="font-bold text-sm">Total Composite Score</div>
+                    <div class="grid grid-cols-[1fr,45px] items-center gap-2 text-xs">
+                        ${createProgressBar(composite.composite, 'lav')}
+                        <span class="text-right font-bold">${composite.composite.toFixed(1)}%</span>
+                    </div>
+                </div>`;
+            }
+            const globalSummary = document.getElementById('global-summary-container');
+            if(globalSummary) {
+                globalSummary.innerHTML = `
+                    <div class="border border-secondary rounded-md p-2">
+                        <div class="text-xs flex justify-between items-center mb-1"><span>Main Study</span> <strong class="font-bold">${composite.mainAvg.toFixed(1)}%</strong></div>
+                        ${createProgressBar(composite.mainAvg, "mint")}
+                    </div>
+                    <div class="border border-secondary rounded-md p-2">
+                        <div class="text-xs flex justify-between items-center mb-1"><span>Revision</span> <strong class="font-bold">${composite.revAvg.toFixed(1)}%</strong></div>
+                        ${createProgressBar(composite.revAvg, "sky")}
+                    </div>
+                    <div class="border border-secondary rounded-md p-2">
+                        <div class="text-xs flex justify-between items-center mb-1"><span>Exams</span> <strong class="font-bold">${composite.examAvg.toFixed(1)}%</strong></div>
+                        ${createProgressBar(composite.examAvg, "peach")}
+                    </div>
+                    <div class="border border-secondary rounded-md p-2">
+                        <div class="text-xs flex justify-between items-center mb-1"><span>Question Banks</span> <strong class="font-bold">${composite.qbAvg.toFixed(1)}%</strong></div>
+                        ${createProgressBar(composite.qbAvg, "amber")}
+                    </div>`;
+            }
+        }
+        function renderSyllabusContent() { const container = document.getElementById('syllabus-content'); if(!container) return; const fragment = document.createDocumentFragment(); const subjectKey = state.activeSubject; const chaptersByPaper = syllabusData[subjectKey]?.chapters?.reduce((acc, chap) => { (acc[chap.paper] = acc[chap.paper] || []).push(chap); return acc; }, {}); if(!chaptersByPaper) { container.innerHTML = 'No chapters found.'; return; } const noteIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`; const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="black" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`; Object.entries(chaptersByPaper).forEach(([paper, chapters]) => { const details = document.createElement('details'); details.open = state.syllabusOpenState[`${subjectKey}-${paper}`] !== false; const paperProgress = calculateProgress(subjectKey, mainStudyItems); const currentPaperProgress = (paper == 1) ? paperProgress.paper1 : paperProgress.paper2; details.innerHTML = `<summary class="flex justify-between items-center p-3 border border-secondary rounded-lg mb-2 cursor-pointer transition-all hover:bg-main"><div class="font-bold flex items-center">${paper}ম পত্র <span class="text-sm font-normal text-muted ml-2">(${currentPaperProgress.toFixed(1)}%)</span> <span class="ml-2" data-info-btn-id="paper-${paper}-info-btn"></span></div><div class="w-1/3">${createProgressBar(currentPaperProgress, paper == 1 ? 'sky' : 'peach')}</div></summary>`; const tableWrapper = document.createElement('div'); tableWrapper.className = 'overflow-x-auto'; const table = document.createElement('table'); table.innerHTML = `<thead><tr><th class="w-1/4">অধ্যায়</th>${trackableItems.map(h => `<th class="text-center">${h}</th>`).join('')}</tr></thead>`; const tbody = document.createElement('tbody'); chapters.forEach(chapter => { const tr = document.createElement('tr'); let cells = `<td class="font-medium">${chapter.name}</td>`; trackableItems.forEach((item, i) => { const key = `s_${subjectKey}_${chapter.id}_${i}`; const status = Number(state.userData?.[key] ?? 0); const noteKey = `note_${key}`; const hasNote = !!state.userData?.[noteKey]; const fillNormalized = normalizeRawTo100(getRawPercentForStatus(status)); const isWon = Number(status) === 5; const isDone = Number(status) === 4; cells += `<td class="text-center"><button class="task-status-btn ${isWon ? 'wont' : ''}" data-key="${key}" style="--fill:${fillNormalized}%"><span class="relative z-10 text-white font-bold text-xs">${isWon ? '✖' : isDone ? tickIconSVG : ''}</span></button><button class="note-btn ${hasNote ? 'has-note' : ''} ml-2" data-key="${noteKey}" data-title="${chapter.name} - ${item}">${noteIconSVG}</button></td>`; }); tr.innerHTML = cells; tbody.appendChild(tr); }); table.appendChild(tbody); tableWrapper.appendChild(table); details.appendChild(tableWrapper); fragment.appendChild(details); }); container.innerHTML = ''; container.appendChild(fragment); setupInfoButtons(); }
+        function renderAnalytics() { const container = document.getElementById('analytics-content'); if(!container) return; container.innerHTML = ''; const weakest = findWeakestSubject(); if(weakest) { container.innerHTML = `<div class="mb-3"><p class="text-xs text-muted">Weakest Subject</p><p class="font-bold text-base text-red-500">${weakest.name} <span class="text-sm font-normal">(${weakest.score.toFixed(1)}%)</span></p></div>`; } else { container.innerHTML = '<p class="text-muted text-xs">Not enough data for analysis.</p>'; } }
+        function setupInfoButtons() {
+            const attach = (selector, data) => { const el = document.querySelector(selector); if(el) { el.innerHTML = ''; el.append(createInfoButton(data)); }};
+            attach('#subject-choice-info-btn', {modalTitle: "Subject Choice", modalDesc: "প্রতিটি বিষয়ের মূল বই, ক্লাস ও মেডিট্রিক্স এর গড় অগ্রগতি এখানে দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('#main-progress-info-btn', {modalTitle: "Main Progress Calculation", modalDesc: "মূল বই ও ক্লাস লেকচারের গড় অগ্রগতি। বায়োলজি ও কেমিস্ট্রির জন্য মূল বই ও মেডিট্রিক্স এর মধ্যে সর্বোচ্চটি এবং ফিজিক্সে মূল বই বাদ দিয়ে গণনা করা হয়।", modalItems: mainStudyItems.concat(revisionItems)});
+            attach('#exam-progress-info-btn', {modalTitle: "Exam Progress Calculation", modalDesc: "সকল ধরণের পরীক্ষার গড় অগ্রগতি।", modalItems: examItems});
+            attach('#qb-progress-info-btn', {modalTitle: "Question Bank Calculation", modalDesc: "সকল প্রশ্নব্যাংক সমাধানের গড় অগ্রগতি।", modalItems: qbItems});
+            attach('#global-summary-info-btn', {modalTitle: "Global Summary & Composite", modalDesc: "Total Composite: সকল বিষয়ের Main Study, Revision, Exams, এবং QB - এই চারটি বিভাগের সার্বিক অগ্রগতির গড়। Global Summaries: প্রতিটি বিভাগের সকল বিষয়ের গড় অগ্রগতি।", modalItems: ["Total Composite Score", "Global Main Study", "Global Revision", "Global Exams", "Global Question Banks"]});
+            attach('#analytics-info-btn', {modalTitle: "Mini Analytics", modalDesc: "Weakest Subject: সকল বিভাগের গড় অগ্রগতির ভিত্তিতে সবচেয়ে পিছিয়ে থাকা বিষয়।", modalItems: []});
+            attach('[data-info-btn-id="paper-1-info-btn"]', {modalTitle: "১ম পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ১ম পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('[data-info-btn-id="paper-2-info-btn"]', {modalTitle: "২য় পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ২য় পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('#countdown-info-btn', { modalTitle: "Countdown Target", modalDesc: `Counting down to: ${TARGET_DATE_STRING}`, modalItems: [] });
+        }
+
+        // --- State Update & Sync Logic REMOVED ---
+        // (debouncedUpdate, updateState, syncPendingWrites are gone)
+
+        // --- Optimized Rerender for View-Only ---
+        function rerenderProgressBarsOnly() { 
+            try { 
+                renderSubjectSelector(); 
+                renderProgressCards(); 
+                renderAnalytics(); 
+                const subjectKey = state.activeSubject; 
+                const paperProgress = calculateProgress(subjectKey, mainStudyItems); 
+                updatePaperSummaryProgress(1, paperProgress.paper1); 
+                updatePaperSummaryProgress(2, paperProgress.paper2); 
+            } catch (e) { console.error("Error updating visuals:", e); renderAll(); } 
+        }
+        function updatePaperSummaryProgress(paperNum, progressValue) { const summaryEl = document.querySelector(`details summary [data-info-btn-id="paper-${paperNum}-info-btn"]`)?.closest('summary'); if (summaryEl) { const progressDiv = summaryEl.querySelector('.w-1\\/3'); const percentSpan = summaryEl.querySelector('.text-muted'); const color = paperNum === 1 ? 'sky' : 'peach'; if (progressDiv) progressDiv.innerHTML = createProgressBar(progressValue, color); if (percentSpan) percentSpan.textContent = `(${progressValue.toFixed(1)}%)`; } }
+
+        // --- Utility Functions ---
+        function showToast(message, type = 'success') { const t = document.createElement('div'); t.className = `px-4 py-2 rounded-lg shadow-lg ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white transition-all duration-300 transform opacity-0 translate-y-5`; t.textContent = message; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.classList.remove('opacity-0', 'translate-y-5'), 50); setTimeout(() => { t.classList.add('opacity-0', 'translate-y-5'); t.addEventListener('transitionend', () => t.remove()); }, 3000); }
+        
+        // --- Note Modal Logic REMOVED ---
+
+        function setupEventHandlers() {
+            const infoModalOverlay = document.getElementById('info-modal-overlay');
+            
+            document.body.addEventListener('click', e => {
+                const targetBtn = e.target.closest('button'); if (!targetBtn) return;
+                
+                // Info Button logic is kept
+                if (targetBtn.classList.contains('info-btn')) { 
+                    const { modalTitle, modalDesc, modalItems } = targetBtn.dataset; 
+                    document.getElementById('info-modal-title').textContent = modalTitle; 
+                    document.getElementById('info-modal-desc').textContent = modalDesc; 
+                    const itemsList = document.getElementById('info-modal-items'); itemsList.innerHTML = ''; 
+                    try { if (modalItems && modalItems.length > 2) { JSON.parse(modalItems).forEach(item => { const li = document.createElement('li'); li.textContent = item; itemsList.appendChild(li); }); } } catch(err) {} 
+                    infoModalOverlay.classList.add('visible'); 
+                    return; 
+                }
+                
+                // 'task-status-btn' and 'note-btn' click logic REMOVED
+            });
+            
+            const closeInfoModal = () => infoModalOverlay.classList.remove('visible');
+            infoModalOverlay.addEventListener('click', e => { if (e.target === infoModalOverlay) closeInfoModal(); });
+            document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
+            
+            const syllabusContent = document.getElementById('syllabus-content');
+            if (syllabusContent) { 
+                syllabusContent.addEventListener('toggle', (e) => { 
+                    if (e.target.tagName === 'DETAILS') state.syllabusOpenState[`${state.activeSubject}-${e.target.textContent.includes('১ম') ? 1 : 2}`] = e.target.open; 
+                }, true); 
+            }
+        }
+        
+        let countdownInterval;
+        function startCountdown() { if(countdownInterval) clearInterval(countdownInterval); const target = new Date(`${TARGET_DATE_STRING}T00:00:00+06:00`); const countdownEl = document.getElementById('countdown'); if(!countdownEl) return; const tick = () => { const diff = Math.max(0, target - new Date()); const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3); countdownEl.innerHTML = `<div class="text-center"><div class="countdown-num">${d}</div><div class="countdown-label">দিন</div></div><div class="text-center"><div class="countdown-num">${String(h).padStart(2,'0')}</div><div class="countdown-label">ঘণ্টা</div></div><div class="text-center"><div class="countdown-num">${String(m).padStart(2,'0')}</div><div class="countdown-label">মিনিট</div></div><div class="text-center"><div class="countdown-num">${String(s).padStart(2,'0')}</div><div class="countdown-label">সেকেন্ড</div></div>`; }; tick(); countdownInterval = setInterval(tick, 1000); }
+        function setupThemeToggle() { const btn = document.getElementById('theme-toggle-btn'); const meta = document.getElementById('theme-color-meta'); const applyTheme = (theme) => { document.documentElement.setAttribute('data-theme', theme); btn.textContent = theme === 'dark' ? '☀' : '🌙'; meta.content = theme === 'dark' ? '#1c1c1c' : '#f8f7f2'; }; btn.addEventListener('click', () => { const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); }); applyTheme(localStorage.getItem('theme') || 'dark'); }
+        function setupViewToggle() { const btn = document.getElementById('view-toggle-btn'); const viewportMeta = document.querySelector('meta[name="viewport"]'); const applyView = (mode) => { if (mode === 'desktop') { document.body.classList.add('desktop-view'); viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); } else { document.body.classList.remove('desktop-view'); viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); } }; btn.addEventListener('click', () => { const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; localStorage.setItem('viewMode', newMode); applyView(newMode); }); applyView(localStorage.getItem('viewMode') || 'mobile'); }
+
+        // --- Render & Initialization ---
+        function renderAll() { try { renderSubjectSelector(); renderProgressCards(); renderSyllabusContent(); renderAnalytics(); } catch (e) { console.error("RenderAll failed:", e); const container = document.getElementById('app-container'); if (container) container.innerHTML = '<div class="text-red-500 p-4">Error rendering dashboard. Check console.</div>'; }}
+        
+        async function startApp() {
+            const syncStatusEl = document.getElementById('connection-status');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const mainContentGrid = document.getElementById('main-content-grid');
+
+            syncStatusEl.textContent = 'Initializing...';
+            setupViewToggle();
+
+            // Local cache (IndexedDB) logic removed. We will render empty first.
+            
+            try { 
+                renderAll(); 
+                if(loadingIndicator) loadingIndicator.style.display = 'none'; 
+                if(mainContentGrid) mainContentGrid.style.display = 'grid'; 
+                state.isInitialized = true; 
+            } catch (e) { console.error("Initial render failed:", e); if(loadingIndicator) loadingIndicator.textContent = 'Error during initial render. Check console.'; }
+
+            if(db && userDocRef) {
+                syncStatusEl.textContent = 'Connecting...';
+                try { 
+                    onSnapshot(userDocRef, (snap) => {
+                        let requiresUpdate = false;
+                        if (snap.exists()) {
+                            const firestoreData = snap.data();
+                            // Only update if data is different
+                            if (JSON.stringify(state.userData) !== JSON.stringify(firestoreData)) {
+                                state.userData = firestoreData;
+                                requiresUpdate = true;
+                            }
+                        }
+                        
+                        // We don't write to DB or sync pending writes
+                        
+                        if (requiresUpdate && state.isInitialized) {
+                            showToast('🔄 Live data updated!', 'success');
+                            rerenderProgressBarsOnly(); // Use the fast re-render
+                        }
+                        
+                        syncStatusEl.textContent = 'Live (View-Only)';
+                        syncStatusEl.className = 'status-indicator online';
+
+                    }, (error) => { 
+                        console.error("Firestore onSnapshot error:", error); 
+                        syncStatusEl.textContent = 'Connection Failed'; 
+                        syncStatusEl.className = 'status-indicator offline'; 
+                    }); 
+                } catch(e) { 
+                    console.error("onSnapshot setup failed:", e); 
+                    syncStatusEl.textContent = 'Firebase Error'; 
+                    syncStatusEl.className = 'status-indicator offline';
+                }
+            } else { 
+                syncStatusEl.textContent = 'Firebase Failed'; 
+                syncStatusEl.className = 'status-indicator offline'; 
+            }
+
+            if (state.isInitialized) {
+                setupEventHandlers();
+                setupInfoButtons();
+                startCountdown();
+                setupThemeToggle();
+                // 'force-sync-btn' and 'online'/'offline' listeners removed
+                window.addEventListener('beforeunload', () => clearInterval(countdownInterval));
+            }
+        }
+        startApp();
+    </script>
+</body>
+</html>
