@@ -44,20 +44,19 @@
         .subject-progress-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 12px; border: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
         .subject-progress-btn.active { border-color: var(--text-primary); background: var(--bg-main); box-shadow: 0 0 0 2px var(--text-primary); } /* Enhanced Active State */
 
+        /* --- VIEW-ONLY CHANGES --- */
         .task-status-btn { 
             --fill: 0%; position: relative; display:inline-flex; align-items:center; justify-content:center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-secondary); background: transparent; 
             overflow: hidden; z-index: 1; transition: transform .08s ease; 
-            /* --- VIEW-ONLY CHANGES --- */
             pointer-events: none; /* Disables clicks */
             cursor: default;
         }
         .task-status-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--fill, 0%); background: linear-gradient(90deg, #7dd3fc, #38bdf8); z-index: -1; transition: width .2s ease-out; }
         .task-status-btn.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
-
         .note-btn { 
-            /* --- VIEW-ONLY CHANGES --- */
             display: none; /* Hide note button completely */
         }
+        /* --- END VIEW-ONLY CHANGES --- */
 
         .info-btn { font-family: sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-primary); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; justify-content: center; align-items: center; transition: all 0.2s; } .info-btn:hover { background: var(--bg-main); transform: scale(1.1); }
         #info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
@@ -108,8 +107,7 @@
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">নির্বাচিত বিষয়ের অগ্রগতি <span id="main-progress-info-btn"></span></h2><div id="selected-subject-main-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">পরীক্ষার অগ্রগতি <span id="exam-progress-info-btn"></span></h2><div id="selected-subject-exam-progress">Loading...</div></div>
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">প্রশ্নব্যাংক অগ্রগতি <span id="qb-progress-info-btn"></span></h2><div id="selected-subject-qb-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
-                <section id="syllabus-shell" class="card"><h2 class="text-base font-bold mb-3">সিলেবাস বিস্তারিত</h2><div id="syllabus-content">Loading...</div></section>
-            </div>
+                </div>
 
             <div class="right-column col-span-1 grid grid-rows-[min-content,auto] gap-5">
                 <div id="countdown-card" class="card text-white p-5">
@@ -137,7 +135,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        // 'writeBatch' is removed as we are not writing
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // --- Firebase Config (Unchanged) ---
@@ -145,9 +142,6 @@
         let app, db, userDocRef;
         try { app = initializeApp(firebaseConfig); db = getFirestore(app); userDocRef = doc(db, "users", "as19", "progress", "main"); } catch (e) { console.error("Firebase initialization failed:", e); }
         
-        // --- IndexedDB & PendingWrites Logic REMOVED ---
-        // This version does not need to cache local changes.
-
         // --- App State & Data (Unchanged) ---
         const state = { userData: {}, activeSubject: 'biology', syllabusOpenState: {}, isInitialized: false };
         const syllabusData = { biology: { name: "জীববিজ্ঞান", chapters: [ { id: 1, name: "কোষ ও এর গঠন", paper: 1 }, { id: 2, name: "কোষ বিভাজন", paper: 1 }, { id: 3, name: "কোষ রসায়ন", paper: 1 }, { id: 4, name: "অণুজীব", paper: 1 }, { id: 5, name: "শৈবাল ও ছত্রাক", paper: 1 }, { id: 6, name: "ব্রায়োফাইটা ও টেরিডোফাইটা", paper: 1 }, { id: 7, name: "নগ্নবীজি ও আবৃতবীজি উদ্ভিদ", paper: 1 }, { id: 8, name: "টিস্যু ও টিস্যুতন্ত্র", paper: 1 }, { id: 9, name: "উদ্ভিদ শরীরতত্ত্ব", paper: 1 }, { id: 10, name: "উদ্ভিদ প্রজনন", paper: 1 }, { id: 11, name: "জীব প্রযুক্তি", paper: 1 }, { id: 12, name: "জীবের পরিবেশ, বিস্তার ও সংরক্ষণ", paper: 1 }, { id: 13, name: "প্রাণির বৈচিত্র্য ও শ্রেণিবিন্যাস", paper: 2 }, { id: 14, name: "প্রাণির পরিচিতি (হাইড্রা)", paper: 2 }, { id: 15, name: "প্রাণির পরিচিতি (ঘাসফড়িং)", paper: 2 }, { id: 16, name: "প্রাণির পরিচিতি (রুই মাছ)", paper: 2 }, { id: 17, name: "মানব শরীরতত্ত্ব: পরিপাক ও শোষণ", paper: 2 }, { id: 18, name: "মানব শরীরতত্ত্ব: রক্ত ও সঞ্চালন", paper: 2 }, { id: 19, name: "মানব শরীরতত্ত্ব: শ্বাসক্রিয়া ও শ্বসন", paper: 2 }, { id: 20, name: "মানব শরীরতত্ত্ব: বর্জ্য ও নিষ্কাশন", paper: 2 }, { id: 21, name: "মানব শরীরতত্ত্ব: চলন ও অঙ্গচালনা", paper: 2 }, { id: 22, name: "মানব শরীরতত্ত্ব: সমন্বয় ও নিয়ন্ত্রণ", paper: 2 }, { id: 23, name: "মানব জীবনের ধারাবাহিকতা", paper: 2 }, { id: 24, name: "মানবদেহের প্রতিরক্ষা", paper: 2 }, { id: 25, name: "জিনতত্ত্ব ও বিবর্তন", paper: 2 }, { id: 26, name: "প্রাণির আচরণ", paper: 2 } ] }, chemistry: { name: "রসায়ন", chapters: [ { id: 1, name: "ল্যাবরেটরির নিরাপদ ব্যবহার", paper: 1 }, { id: 2, name: "গুণগত রসায়ন", paper: 1 }, { id: 3, name: "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন", paper: 1 }, { id: 4, name: "রাসায়নিক পরিবর্তন", paper: 1 }, { id: 5, name: "কর্মমূখী রসায়ন", paper: 1 }, { id: 6, name: "পরিবেশ রসায়ন", paper: 2 }, { id: 7, name: "জৈব রসায়ন", paper: 2 }, { id: 8, name: "পরিমাণগত রসায়ন", paper: 2 }, { id: 9, name: "তড়িৎ রসায়ন", paper: 2 }, { id: 10, name: "অর্থনৈতিক রসায়ন", paper: 2 } ] }, physics: { name: "পদার্থবিজ্ঞান", chapters: [ { id: 1, name: "ভৌত জগত ও পরিমাপ", paper: 1 }, { id: 2, name: "ভেক্টর", paper: 1 }, { id: 3, name: "গতিবিদ্যা", paper: 1 }, { id: 4, name: "নিউটনিয়ান বলবিদ্যা", paper: 1 }, { id: 5, name: "কাজ, শক্তি ও ক্ষমতা", paper: 1 }, { id: 6, name: "মহাকর্ষ ও অভিকর্ষ", paper: 1 }, { id: 7, name: "পদার্থের গাঠনিক ধর্ম", paper: 1 }, { id: 8, name: "পর্যাবৃত্তিক গতি", paper: 1 }, { id: 9, name: "তরঙ্গ", paper: 1 }, { id: 10, name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", paper: 1 }, { id: 11, name: "তাপগতিবিদ্যা", paper: 2 }, { id: 12, name: "স্থির তড়িৎ", paper: 2 }, { id: 13, name: "চল তড়িৎ", paper: 2 }, { id: 14, name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", paper: 2 }, { id: 15, name: "তড়িৎ চৌম্বক আবেশ ও পরিবর্তী প্রবাহ", paper: 2 }, { id: 16, name: "জ্যামিতিক আলোকবিজ্ঞান", paper: 2 }, { id: 17, name: "ভৌত আলোকবিজ্ঞা", paper: 2 }, { id: 18, name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", paper: 2 }, { id: 19, name: "পরমাণুর মডেল এবং নিউক্লিয়ার পদার্থবিজ্ঞান", paper: 2 }, { id: 20, name: "সেমিকন্ডাক্টর ও ইলেকট্রনিকস", paper: 2 }, { id: 21, name: "জ্যোতির্বিজ্ঞান", paper: 2 } ] } };
@@ -207,8 +201,11 @@
                     </div>`;
             }
         }
-        function renderSyllabusContent() { const container = document.getElementById('syllabus-content'); if(!container) return; const fragment = document.createDocumentFragment(); const subjectKey = state.activeSubject; const chaptersByPaper = syllabusData[subjectKey]?.chapters?.reduce((acc, chap) => { (acc[chap.paper] = acc[chap.paper] || []).push(chap); return acc; }, {}); if(!chaptersByPaper) { container.innerHTML = 'No chapters found.'; return; } const noteIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`; const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="black" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`; Object.entries(chaptersByPaper).forEach(([paper, chapters]) => { const details = document.createElement('details'); details.open = state.syllabusOpenState[`${subjectKey}-${paper}`] !== false; const paperProgress = calculateProgress(subjectKey, mainStudyItems); const currentPaperProgress = (paper == 1) ? paperProgress.paper1 : paperProgress.paper2; details.innerHTML = `<summary class="flex justify-between items-center p-3 border border-secondary rounded-lg mb-2 cursor-pointer transition-all hover:bg-main"><div class="font-bold flex items-center">${paper}ম পত্র <span class="text-sm font-normal text-muted ml-2">(${currentPaperProgress.toFixed(1)}%)</span> <span class="ml-2" data-info-btn-id="paper-${paper}-info-btn"></span></div><div class="w-1/3">${createProgressBar(currentPaperProgress, paper == 1 ? 'sky' : 'peach')}</div></summary>`; const tableWrapper = document.createElement('div'); tableWrapper.className = 'overflow-x-auto'; const table = document.createElement('table'); table.innerHTML = `<thead><tr><th class="w-1/4">অধ্যায়</th>${trackableItems.map(h => `<th class="text-center">${h}</th>`).join('')}</tr></thead>`; const tbody = document.createElement('tbody'); chapters.forEach(chapter => { const tr = document.createElement('tr'); let cells = `<td class="font-medium">${chapter.name}</td>`; trackableItems.forEach((item, i) => { const key = `s_${subjectKey}_${chapter.id}_${i}`; const status = Number(state.userData?.[key] ?? 0); const noteKey = `note_${key}`; const hasNote = !!state.userData?.[noteKey]; const fillNormalized = normalizeRawTo100(getRawPercentForStatus(status)); const isWon = Number(status) === 5; const isDone = Number(status) === 4; cells += `<td class="text-center"><button class="task-status-btn ${isWon ? 'wont' : ''}" data-key="${key}" style="--fill:${fillNormalized}%"><span class="relative z-10 text-white font-bold text-xs">${isWon ? '✖' : isDone ? tickIconSVG : ''}</span></button><button class="note-btn ${hasNote ? 'has-note' : ''} ml-2" data-key="${noteKey}" data-title="${chapter.name} - ${item}">${noteIconSVG}</button></td>`; }); tr.innerHTML = cells; tbody.appendChild(tr); }); table.appendChild(tbody); tableWrapper.appendChild(table); details.appendChild(tableWrapper); fragment.appendChild(details); }); container.innerHTML = ''; container.appendChild(fragment); setupInfoButtons(); }
+        
+        // --- renderSyllabusContent() function REMOVED ---
+
         function renderAnalytics() { const container = document.getElementById('analytics-content'); if(!container) return; container.innerHTML = ''; const weakest = findWeakestSubject(); if(weakest) { container.innerHTML = `<div class="mb-3"><p class="text-xs text-muted">Weakest Subject</p><p class="font-bold text-base text-red-500">${weakest.name} <span class="text-sm font-normal">(${weakest.score.toFixed(1)}%)</span></p></div>`; } else { container.innerHTML = '<p class="text-muted text-xs">Not enough data for analysis.</p>'; } }
+        
         function setupInfoButtons() {
             const attach = (selector, data) => { const el = document.querySelector(selector); if(el) { el.innerHTML = ''; el.append(createInfoButton(data)); }};
             attach('#subject-choice-info-btn', {modalTitle: "Subject Choice", modalDesc: "প্রতিটি বিষয়ের মূল বই, ক্লাস ও মেডিট্রিক্স এর গড় অগ্রগতি এখানে দেখানো হয়েছে।", modalItems: mainStudyItems});
@@ -217,27 +214,23 @@
             attach('#qb-progress-info-btn', {modalTitle: "Question Bank Calculation", modalDesc: "সকল প্রশ্নব্যাংক সমাধানের গড় অগ্রগতি।", modalItems: qbItems});
             attach('#global-summary-info-btn', {modalTitle: "Global Summary & Composite", modalDesc: "Total Composite: সকল বিষয়ের Main Study, Revision, Exams, এবং QB - এই চারটি বিভাগের সার্বিক অগ্রগতির গড়। Global Summaries: প্রতিটি বিভাগের সকল বিষয়ের গড় অগ্রগতি।", modalItems: ["Total Composite Score", "Global Main Study", "Global Revision", "Global Exams", "Global Question Banks"]});
             attach('#analytics-info-btn', {modalTitle: "Mini Analytics", modalDesc: "Weakest Subject: সকল বিভাগের গড় অগ্রগতির ভিত্তিতে সবচেয়ে পিছিয়ে থাকা বিষয়।", modalItems: []});
-            attach('[data-info-btn-id="paper-1-info-btn"]', {modalTitle: "১ম পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ১ম পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
-            attach('[data-info-btn-id="paper-2-info-btn"]', {modalTitle: "২য় পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ২য় পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
             attach('#countdown-info-btn', { modalTitle: "Countdown Target", modalDesc: `Counting down to: ${TARGET_DATE_STRING}`, modalItems: [] });
+            // Paper 1 & 2 info buttons REMOVED
         }
 
         // --- State Update & Sync Logic REMOVED ---
-        // (debouncedUpdate, updateState, syncPendingWrites are gone)
-
+        
         // --- Optimized Rerender for View-Only ---
         function rerenderProgressBarsOnly() { 
             try { 
                 renderSubjectSelector(); 
                 renderProgressCards(); 
                 renderAnalytics(); 
-                const subjectKey = state.activeSubject; 
-                const paperProgress = calculateProgress(subjectKey, mainStudyItems); 
-                updatePaperSummaryProgress(1, paperProgress.paper1); 
-                updatePaperSummaryProgress(2, paperProgress.paper2); 
+                // updatePaperSummaryProgress() calls REMOVED
             } catch (e) { console.error("Error updating visuals:", e); renderAll(); } 
         }
-        function updatePaperSummaryProgress(paperNum, progressValue) { const summaryEl = document.querySelector(`details summary [data-info-btn-id="paper-${paperNum}-info-btn"]`)?.closest('summary'); if (summaryEl) { const progressDiv = summaryEl.querySelector('.w-1\\/3'); const percentSpan = summaryEl.querySelector('.text-muted'); const color = paperNum === 1 ? 'sky' : 'peach'; if (progressDiv) progressDiv.innerHTML = createProgressBar(progressValue, color); if (percentSpan) percentSpan.textContent = `(${progressValue.toFixed(1)}%)`; } }
+        
+        // --- updatePaperSummaryProgress() function REMOVED ---
 
         // --- Utility Functions ---
         function showToast(message, type = 'success') { const t = document.createElement('div'); t.className = `px-4 py-2 rounded-lg shadow-lg ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white transition-all duration-300 transform opacity-0 translate-y-5`; t.textContent = message; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.classList.remove('opacity-0', 'translate-y-5'), 50); setTimeout(() => { t.classList.add('opacity-0', 'translate-y-5'); t.addEventListener('transitionend', () => t.remove()); }, 3000); }
@@ -250,7 +243,6 @@
             document.body.addEventListener('click', e => {
                 const targetBtn = e.target.closest('button'); if (!targetBtn) return;
                 
-                // Info Button logic is kept
                 if (targetBtn.classList.contains('info-btn')) { 
                     const { modalTitle, modalDesc, modalItems } = targetBtn.dataset; 
                     document.getElementById('info-modal-title').textContent = modalTitle; 
@@ -260,20 +252,13 @@
                     infoModalOverlay.classList.add('visible'); 
                     return; 
                 }
-                
-                // 'task-status-btn' and 'note-btn' click logic REMOVED
             });
             
             const closeInfoModal = () => infoModalOverlay.classList.remove('visible');
             infoModalOverlay.addEventListener('click', e => { if (e.target === infoModalOverlay) closeInfoModal(); });
             document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
             
-            const syllabusContent = document.getElementById('syllabus-content');
-            if (syllabusContent) { 
-                syllabusContent.addEventListener('toggle', (e) => { 
-                    if (e.target.tagName === 'DETAILS') state.syllabusOpenState[`${state.activeSubject}-${e.target.textContent.includes('১ম') ? 1 : 2}`] = e.target.open; 
-                }, true); 
-            }
+            // syllabusContent event listener REMOVED
         }
         
         let countdownInterval;
@@ -282,7 +267,14 @@
         function setupViewToggle() { const btn = document.getElementById('view-toggle-btn'); const viewportMeta = document.querySelector('meta[name="viewport"]'); const applyView = (mode) => { if (mode === 'desktop') { document.body.classList.add('desktop-view'); viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); } else { document.body.classList.remove('desktop-view'); viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); } }; btn.addEventListener('click', () => { const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; localStorage.setItem('viewMode', newMode); applyView(newMode); }); applyView(localStorage.getItem('viewMode') || 'mobile'); }
 
         // --- Render & Initialization ---
-        function renderAll() { try { renderSubjectSelector(); renderProgressCards(); renderSyllabusContent(); renderAnalytics(); } catch (e) { console.error("RenderAll failed:", e); const container = document.getElementById('app-container'); if (container) container.innerHTML = '<div class="text-red-500 p-4">Error rendering dashboard. Check console.</div>'; }}
+        function renderAll() { 
+            try { 
+                renderSubjectSelector(); 
+                renderProgressCards(); 
+                // renderSyllabusContent() call REMOVED
+                renderAnalytics(); 
+            } catch (e) { console.error("RenderAll failed:", e); const container = document.getElementById('app-container'); if (container) container.innerHTML = '<div class="text-red-500 p-4">Error rendering dashboard. Check console.</div>'; }
+        }
         
         async function startApp() {
             const syncStatusEl = document.getElementById('connection-status');
@@ -291,8 +283,6 @@
 
             syncStatusEl.textContent = 'Initializing...';
             setupViewToggle();
-
-            // Local cache (IndexedDB) logic removed. We will render empty first.
             
             try { 
                 renderAll(); 
@@ -308,18 +298,15 @@
                         let requiresUpdate = false;
                         if (snap.exists()) {
                             const firestoreData = snap.data();
-                            // Only update if data is different
                             if (JSON.stringify(state.userData) !== JSON.stringify(firestoreData)) {
                                 state.userData = firestoreData;
                                 requiresUpdate = true;
                             }
                         }
                         
-                        // We don't write to DB or sync pending writes
-                        
                         if (requiresUpdate && state.isInitialized) {
                             showToast('🔄 Live data updated!', 'success');
-                            rerenderProgressBarsOnly(); // Use the fast re-render
+                            rerenderProgressBarsOnly();
                         }
                         
                         syncStatusEl.textContent = 'Live (View-Only)';
@@ -345,14 +332,10 @@
                 setupInfoButtons();
                 startCountdown();
                 setupThemeToggle();
-                // 'force-sync-btn' and 'online'/'offline' listeners removed
                 window.addEventListener('beforeunload', () => clearInterval(countdownInterval));
             }
         }
         startApp();
     </script>
 </body>
-
 </html>
-
-
