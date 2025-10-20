@@ -5,31 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
     <meta name="theme-color" id="theme-color-meta" content="#1c1c1c" />
-    <title>AS Study Dashboard (View-Only)</title>
-
+    <title>AS Study Dashboard (Viewer)</title> 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet" />
-
     <style>
         :root {
             --bg-main: #f8f7f2; --bg-card: #ffffff; --bg-header: rgba(248,247,242,0.9);
             --text-primary: #3b2b22; --text-secondary: #1f2937; --text-muted: #6b6b6b;
             --border-primary: #e6d7c9; --border-secondary: #f3ece6;
-            --progress-track: #d1d5db; /* Tailwind gray-300 */
+            --progress-track: #d1d5db;
         }
         html[data-theme="dark"] {
             --bg-main: #1c1c1c; --bg-card: #2a2a2a; --bg-header: rgba(28, 28, 28, 0.85);
             --text-primary: #e5e7eb; --text-secondary: #f3f4f6; --text-muted: #9ca3af;
             --border-primary: #4b5563; --border-secondary: #374151;
-            --progress-track: #4b5563; /* Tailwind gray-600 */
+            --progress-track: #4b5563;
         }
-
-        html, body { height: 100%; margin: 0; background: var(--bg-main); color: var(--text-primary); font-family: 'Noto Sans Bengali', sans-serif; -webkit-font-smoothing: antialiased; }
+        html, body { height: 100%; margin: 0; background: var(--bg-main); color: var(--text-primary); font-family: 'Noto Sans Bengali', sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; }
         .card { background: var(--bg-card); border-radius: 12px; padding: 18px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07); border: 1px solid var(--border-secondary); transition: padding 0.2s ease; }
-        .progress-bar-container { background-color: var(--progress-track); border-radius: 9999px; overflow: hidden; height: 0.5rem; } /* h-2 */
+        .progress-bar-container { background-color: var(--progress-track); border-radius: 9999px; overflow: hidden; height: 0.5rem; }
         .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.4s ease-out; }
-
         .pb-gradient-mint { background: linear-gradient(90deg, #6ee7b7, #34d399); }
         .pb-gradient-sky { background: linear-gradient(90deg, #7dd3fc, #38bdf8); }
         .pb-gradient-peach { background: linear-gradient(90deg, #fb923c, #f97316); }
@@ -37,42 +33,30 @@
         .pb-gradient-amber { background: linear-gradient(90deg, #fcd34d, #fbbf24); }
         .pb-gradient-cyan { background: linear-gradient(90deg, #67e8f9, #22d3ee); }
         .pb-gradient-rose { background: linear-gradient(90deg, #fb7185, #f43f5e); }
-
+        
         #countdown-card { background: linear-gradient(135deg, #d90429, #ef233c); box-shadow: 0 10px 25px rgba(217, 4, 41, 0.25); }
         .countdown-num { font-weight:800; font-size:24px; } .countdown-label { font-size:12px; opacity:0.95; }
         .subject-progress-svg circle { transition: stroke-dashoffset 0.4s ease-out; }
         .subject-progress-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 12px; border: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
-        .subject-progress-btn.active { border-color: var(--text-primary); background: var(--bg-main); box-shadow: 0 0 0 2px var(--text-primary); } /* Enhanced Active State */
-
-        /* --- VIEW-ONLY CHANGES --- */
-        .task-status-btn { 
-            --fill: 0%; position: relative; display:inline-flex; align-items:center; justify-content:center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-secondary); background: transparent; 
-            overflow: hidden; z-index: 1; transition: transform .08s ease; 
-            pointer-events: none; /* Disables clicks */
-            cursor: default;
-        }
-        .task-status-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--fill, 0%); background: linear-gradient(90deg, #7dd3fc, #38bdf8); z-index: -1; transition: width .2s ease-out; }
-        .task-status-btn.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
-        .note-btn { 
-            display: none; /* Hide note button completely */
-        }
-        /* --- END VIEW-ONLY CHANGES --- */
+        .subject-progress-btn.active { border-color: var(--text-primary); background: var(--bg-main); box-shadow: 0 0 0 2px var(--text-primary); }
+        
+        /* View-Only Status Styles */
+        .status-display-box { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+        .status-display-box.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
+        .status-display-box.done { background: #22c55e; border-color: #15803d; color: #fff !important; }
+        .status-display-box.pending { border: 2px solid var(--border-secondary); color: var(--text-primary); }
 
         .info-btn { font-family: sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-primary); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; justify-content: center; align-items: center; transition: all 0.2s; } .info-btn:hover { background: var(--bg-main); transform: scale(1.1); }
-        #info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-        #info-modal-overlay.visible { opacity: 1; pointer-events: auto; }
-        #info-modal-content { background: var(--bg-card); padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s; }
-        #info-modal-overlay.visible #info-modal-content { transform: scale(1); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; padding: 1rem; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--bg-card); padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s; max-height: 80vh; overflow-y: auto; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
         #info-modal-content ul { list-style-type: disc; padding-left: 20px; }
-
-        .status-indicator { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; user-select: none; }
-        .status-indicator.online { background-color: #166534; color: #dcfce7; } .status-indicator.offline { background-color: #991b1b; color: #fee2e2; }
-
-        /* --- Optimize Card Sizes & Mobile Default --- */
+        
         body.desktop-view { min-width: 1280px; }
         body:not(.desktop-view) .main-grid { grid-template-columns: 1fr; }
-        body:not(.desktop-view) .right-column { grid-row-start: 1; }
-        body:not(.desktop-view) .card { padding: 14px; }
+        body:not(.desktop-view) .right-column { grid-row-start: 1; display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        body:not(.desktop-view) .card { padding: 14px; width: 100%; box-sizing: border-box; }
         body.desktop-view .card { padding: 20px; }
         body:not(.desktop-view) h1 { font-size: 1.125rem; }
         body:not(.desktop-view) h2 { font-size: 1rem; }
@@ -86,20 +70,112 @@
         body.desktop-view #header h1 { font-size: 1.25rem; }
         body.desktop-view #selected-subject-main-progress,
         body.desktop-view #selected-subject-qb-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        #syllabus-content table td, #syllabus-content table th { white-space: nowrap; }
+        
+        .goal-tab { padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; color: var(--text-muted); font-weight: 500;}
+        .goal-tab.active { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 700; }
+        .goal-list-item { display: flex; align-items: center; gap: 12px; padding: 8px 4px; border-bottom: 1px solid var(--border-secondary); }
+        .goal-list-item:last-child { border-bottom: none; }
+        
+        .goal-tick-icon {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid var(--border-primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700;
+        }
+        .goal-list-item.completed .goal-tick-icon {
+            background-color: #22c55e; border-color: #15803d; color: #fff;
+        }
+        .goal-tick-icon.wont {
+            background: #ef4444; border-color: #991b1b; color: #fff;
+        }
+        .goal-list-item.completed .goal-title {
+            text-decoration: line-through; color: var(--text-muted);
+        }
+        #goal-list-container {
+            max-height: 308px;
+            overflow-y: auto;
+            padding-right: 4px; 
+        }
+        .goal-title, .goal-time { flex-grow: 1; font-weight: 500; }
+        .goal-time { flex-grow: 0; flex-shrink: 0; color: var(--text-muted); font-size: 11px; font-weight: 600; }
+        
+        #settings-panel { 
+            background: var(--bg-card);
+            transition: opacity 0.2s, transform 0.2s; 
+            transform-origin: top right;
+            z-index: 50;
+        }
+        #settings-panel.hidden { display: none; }
+        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border-secondary); gap: 12px; }
+        .settings-item-info { display: flex; align-items: center; gap: 12px; flex-grow: 1; }
+        .settings-item-info svg { width: 20px; height: 20px; color: var(--text-muted); flex-shrink: 0; }
+        .settings-item-info p { margin: 0; line-height: 1.3; }
+        .settings-item:last-child { border-bottom: none; }
+        .settings-item-control { flex-shrink: 0; }
+        .settings-item-control button { font-size: 12px; padding: 4px 10px; border: 1px solid var(--border-primary); border-radius: 6px; background-color: var(--bg-main); transition: background-color 0.2s; }
+        .settings-item-control button:hover { background-color: var(--border-secondary); }
+        
+        #syllabus-content th:first-child,
+        #syllabus-content td:first-child {
+            position: -webkit-sticky; position: sticky; left: 0;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border-primary);
+            z-index: 10;
+        }
+        #syllabus-content th:first-child { z-index: 11; }
+        #toast-container { right: auto; bottom: auto; top: 1.25rem; left: 50%; transform: translateX(-50%); z-index: 9999; }
+        #connection-status { transition: background-color 0.3s; }
+        .status-online { background-color: #22c55e; }
+        .status-offline { background-color: #ef4444; }
+        .status-syncing { background-color: #3b82f6; }
+        .status-error { background-color: #f97316; }
+        .status-idle { background-color: #6b7280; }
+        
+        #goal-tab-content { min-height: 240px; }
     </style>
 </head>
 <body class="text-sm">
+    <div id="offline-banner" style="display:none;" class="bg-red-600 text-white p-2 text-center fixed top-0 w-full z-50">
+        ⚠️ আপনি অফলাইন মোডে আছেন।
+    </div>
+
     <header id="header" class="sticky top-0 z-30 w-full bg-header border-b border-primary backdrop-blur-sm">
-        <div class="container max-w-screen-xl mx-auto flex justify-between items-center py-2 px-4">
-            <h1 class="text-xl font-bold">AS Study Dashboard (View-Only)</h1>
+        <div class="w-full max-w-screen-xl mx-auto flex justify-between items-center py-2 px-4">
+            <h1 class="text-xl font-bold">AS Study Dashboard (Viewer)</h1>
             <div class="flex items-center gap-3">
-                <button id="view-toggle-btn" class="text-xs px-2 py-1 border border-primary rounded-md">Toggle View</button>
-                <div id="connection-status" class="status-indicator">...</div>
-                <button id="theme-toggle-btn" title="Change theme">🌙</button>
+                <div id="connection-status" class="w-3 h-3 rounded-full status-idle" title="Connecting..."></div>
+                <button id="settings-btn" class="p-1 rounded-full hover:bg-border-secondary" title="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0l-.1.41-1.15.3a1.75 1.75 0 00-2.3 2.3l.3 1.15-.41.1c-1.56.38-1.56 2.6 0 2.98l.41.1-.3 1.15a1.75 1.75 0 002.3 2.3l1.15-.3.1.41c.38 1.56 2.6 1.56 2.98 0l.1-.41 1.15.3c1.02.28 2.03-.2 2.3-1.15l.3-1.15.41-.1c1.56-.38 1.56-2.6 0-2.98l-.41-.1.3-1.15c.28-1.02-.2-2.03-1.15-2.3l-1.15-.3-.1-.41zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
+                </button>
             </div>
         </div>
     </header>
 
+    <div id="settings-panel" class="hidden absolute top-14 right-4 w-80 max-w-[90vw] border border-border-primary rounded-lg shadow-xl">
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" /></svg>
+                <div><span class="font-semibold">Click Sound</span><p class="text-xs text-muted">Adjust click volume</p></div>
+            </div>
+            <input type="range" id="sound-volume-slider" min="0" max="1" step="0.1" class="w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700" style="accent-color: var(--text-primary);">
+        </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-6.364-.386l1.591-1.591M3 12H.75m.386-6.364l1.591 1.591" /></svg>
+                <div><span class="font-semibold">Theme</span><p class="text-xs text-muted">Switch light/dark mode</p></div>
+            </div>
+            <div class="settings-item-control"><button id="theme-toggle-btn" title="Change theme" class="text-xl px-2 !border-transparent !bg-transparent">🌙</button></div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>
+                <div><span class="font-semibold">View Mode</span><p class="text-xs text-muted">Switch mobile/desktop</p></div>
+            </div>
+            <div class="settings-item-control"><button id="view-toggle-btn">Toggle View</button></div>
+        </div>
+    </div>
+    
     <main id="app-container" class="container max-w-screen-xl mx-auto py-4 px-4">
         <div id="main-content-grid" class="main-grid grid grid-cols-3 gap-5" style="display: none;">
             <div class="left-column col-span-2 flex flex-col gap-5">
@@ -107,235 +183,723 @@
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">নির্বাচিত বিষয়ের অগ্রগতি <span id="main-progress-info-btn"></span></h2><div id="selected-subject-main-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">পরীক্ষার অগ্রগতি <span id="exam-progress-info-btn"></span></h2><div id="selected-subject-exam-progress">Loading...</div></div>
                 <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">প্রশ্নব্যাংক অগ্রগতি <span id="qb-progress-info-btn"></span></h2><div id="selected-subject-qb-progress" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">Loading...</div></div>
-                </div>
-
-            <div class="right-column col-span-1 grid grid-rows-[min-content,auto] gap-5">
+                <section id="syllabus-shell" class="card"><h2 class="text-base font-bold mb-3">সিলেবাস বিস্তারিত</h2><div id="syllabus-content">Loading...</div></section>
+            </div>
+            <div class="right-column col-span-1 grid auto-rows-min gap-5">
                 <div id="countdown-card" class="card text-white p-5">
-                    <h2 class="text-lg font-bold mb-4 text-center flex justify-between items-center">
-                        <span>Final Countdown</span>
-                        <span id="countdown-info-btn"></span>
-                    </h2>
+                    <h2 class="text-lg font-bold mb-4 text-center flex justify-between items-center"><span>Final Countdown</span><span id="countdown-info-btn"></span></h2>
                     <div id="countdown" class="flex justify-around">Loading...</div>
                 </div>
-                <div class="flex flex-col gap-5">
-                    <div class="card">
-                        <h2 class="text-base font-bold mb-3 flex justify-between items-center">Global Summary & Composite <span id="global-summary-info-btn"></span></h2>
-                        <div id="syllabus-total-container" class="mb-4">Loading Composite...</div>
-                        <div id="global-summary-container" class="flex flex-col gap-3">Loading Summaries...</div>
-                    </div>
-                    <div class="card"><h2 class="text-base font-bold mb-3 flex justify-between items-center">Mini Analytics <span id="analytics-info-btn"></span></h2><div id="analytics-content">Loading...</div></div>
+                <div class="card">
+                    <h2 class="text-base font-bold mb-3 flex justify-between items-center">সার্বিক সারাংশ ও অগ্রগতি <span id="global-summary-info-btn"></span></h2>
+                    <div id="overall-progress-container" class="mb-4">Loading Progress...</div>
+                    <div id="streak-container" class="mb-4"></div>
+                    <div id="global-summary-container" class="flex flex-col gap-3">Loading Summaries...</div>
                 </div>
+                <div id="goal-tracker-card" class="card"></div>
             </div>
         </div>
         <div id="loading-indicator" class="text-center py-10">Initializing Dashboard...</div>
     </main>
 
-    <div id="info-modal-overlay" role="dialog" aria-modal="true"><div id="info-modal-content"><h3 id="info-modal-title" class="font-bold text-lg mb-2"></h3><p id="info-modal-desc" class="text-muted mb-3 text-sm"></p><div class="mb-2 font-semibold text-sm">গণনাকৃত আইটেম:</div><ul id="info-modal-items" class="text-sm"></ul><button id="info-modal-close" class="mt-4 px-4 py-2 bg-rose-600 text-white rounded-lg w-full">Close</button></div></div>
-    <div id="toast-container" class="fixed right-4 bottom-5 z-50"></div>
+    <div id="info-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true"><div id="info-modal-content" class="modal-content"><h3 id="info-modal-title" class="font-bold text-lg mb-2"></h3><p id="info-modal-desc" class="text-muted mb-3 text-sm"></p><div class="mb-2 font-semibold text-sm">গণনাকৃত আইটেম:</div><ul id="info-modal-items" class="text-sm"></ul><button id="info-modal-close" class="mt-4 px-4 py-2 bg-rose-600 text-white rounded-lg w-full">বন্ধ করুন</button></div></div>
+
+    <div id="toast-container" class="fixed z-50 space-y-2"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // --- Firebase Config (Unchanged) ---
-        const firebaseConfig = {"apiKey":"AIzaSyDTLhIkrW9qk6KPT_gTDibIiJeVwWYTowk","authDomain":"my-study-dashboard.firebaseapp.com","projectId":"my-study-dashboard","storageBucket":"my-study-dashboard.appspot.com","messagingSenderId":"66307909031","appId":"1:66307909031:web:9e724a43c8c11a0ef80282"};
-        let app, db, userDocRef;
-        try { app = initializeApp(firebaseConfig); db = getFirestore(app); userDocRef = doc(db, "users", "as19", "progress", "main"); } catch (e) { console.error("Firebase initialization failed:", e); }
         
-        // --- App State & Data (Unchanged) ---
-        const state = { userData: {}, activeSubject: 'biology', syllabusOpenState: {}, isInitialized: false };
+        // This page is VIEW-ONLY. It only READS data from Firebase.
+        
+        const CURRENT_DATA_VERSION = 18.3; // Data structure version (for migration logic)
+        const FIRESTORE_USER_ID = 'as19'; // MUST be the same as the main dashboard
+        const firebaseConfig = {"apiKey":"AIzaSyDTLhIkrW9qk6KPT_gTDibIiJeVwWYTowk","authDomain":"my-study-dashboard.firebaseapp.com","projectId":"my-study-dashboard","storageBucket":"my-study-dashboard.appspot.com","messagingSenderId":"66307909031","appId":"1:66307909031:web:9e724a43c8c11a0ef80282"};
+        
+        let app, db, userDocRef;
+        try { 
+            app = initializeApp(firebaseConfig); 
+            db = getFirestore(app); 
+            userDocRef = doc(db, "users", FIRESTORE_USER_ID); 
+        } catch (e) { 
+            console.error("Firebase initialization failed:", e); 
+        }
+        
+        // IndexedDB logic is removed, as this viewer page doesn't save any data locally.
+        
+        const state = { 
+            userData: {}, 
+            activeSubject: 'biology', 
+            syllabusOpenState: {}, 
+            isInitialized: false, 
+            lastCompositeProgress: 0, 
+            activeGoalTab: 'today', 
+            historyViewState: { mode: 'last7days', selectedDate: null }, 
+            currentWeeklyViewDate: new Date().toISOString(), 
+            settings: { 
+                theme: 'dark', // Default theme
+                viewMode: 'mobile', // Default view
+                soundVolume: 0.3, // Default volume
+                weekStartDay: 'sunday' // Default
+            } 
+        };
+        
+        let audioCtx; let masterGain;
+        function initAudio() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); masterGain = audioCtx.createGain(); masterGain.connect(audioCtx.destination); updateSoundVolume(state.settings.soundVolume); } catch (e) { console.error("Web Audio API not supported", e); } } }
+        
+        function updateSoundVolume(volume) { 
+            state.settings.soundVolume = parseFloat(volume); // Update local state only
+            if (masterGain) { 
+                masterGain.gain.setValueAtTime(state.settings.soundVolume, audioCtx.currentTime); 
+            } 
+            const slider = document.getElementById('sound-volume-slider'); 
+            if (slider) slider.value = state.settings.soundVolume; 
+        }
+        
+        function playTickSound() { if (!audioCtx || state.settings.soundVolume <= 0) return; if (audioCtx.state === 'suspended') { audioCtx.resume(); } try { const oscillator = audioCtx.createOscillator(); oscillator.type = 'triangle'; oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); const soundGain = audioCtx.createGain(); soundGain.gain.setValueAtTime(1, audioCtx.currentTime); soundGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03); oscillator.connect(soundGain).connect(masterGain); oscillator.start(audioCtx.currentTime); oscillator.stop(audioCtx.currentTime + 0.03); } catch(e) { console.error("Error playing tick sound:", e); } }
+        
+        // Syllabus, items, and progress calculation logic remains the same
         const syllabusData = { biology: { name: "জীববিজ্ঞান", chapters: [ { id: 1, name: "কোষ ও এর গঠন", paper: 1 }, { id: 2, name: "কোষ বিভাজন", paper: 1 }, { id: 3, name: "কোষ রসায়ন", paper: 1 }, { id: 4, name: "অণুজীব", paper: 1 }, { id: 5, name: "শৈবাল ও ছত্রাক", paper: 1 }, { id: 6, name: "ব্রায়োফাইটা ও টেরিডোফাইটা", paper: 1 }, { id: 7, name: "নগ্নবীজি ও আবৃতবীজি উদ্ভিদ", paper: 1 }, { id: 8, name: "টিস্যু ও টিস্যুতন্ত্র", paper: 1 }, { id: 9, name: "উদ্ভিদ শরীরতত্ত্ব", paper: 1 }, { id: 10, name: "উদ্ভিদ প্রজনন", paper: 1 }, { id: 11, name: "জীব প্রযুক্তি", paper: 1 }, { id: 12, name: "জীবের পরিবেশ, বিস্তার ও সংরক্ষণ", paper: 1 }, { id: 13, name: "প্রাণির বৈচিত্র্য ও শ্রেণিবিন্যাস", paper: 2 }, { id: 14, name: "প্রাণির পরিচিতি (হাইড্রা)", paper: 2 }, { id: 15, name: "প্রাণির পরিচিতি (ঘাসফড়িং)", paper: 2 }, { id: 16, name: "প্রাণির পরিচিতি (রুই মাছ)", paper: 2 }, { id: 17, name: "মানব শরীরতত্ত্ব: পরিপাক ও শোষণ", paper: 2 }, { id: 18, name: "মানব শরীরতত্ত্ব: রক্ত ও সঞ্চালন", paper: 2 }, { id: 19, name: "মানব শরীরতত্ত্ব: শ্বাসক্রিয়া ও শ্বসন", paper: 2 }, { id: 20, name: "মানব শরীরতত্ত্ব: বর্জ্য ও নিষ্কাশন", paper: 2 }, { id: 21, name: "মানব শরীরতত্ত্ব: চলন ও অঙ্গচালনা", paper: 2 }, { id: 22, name: "মানব শরীরতত্ত্ব: সমন্বয় ও নিয়ন্ত্রণ", paper: 2 }, { id: 23, name: "মানব জীবনের ধারাবাহিকতা", paper: 2 }, { id: 24, name: "মানবদেহের প্রতিরক্ষা", paper: 2 }, { id: 25, name: "জিনতত্ত্ব ও বিবর্তন", paper: 2 }, { id: 26, name: "প্রাণির আচরণ", paper: 2 } ] }, chemistry: { name: "রসায়ন", chapters: [ { id: 1, name: "ল্যাবরেটরির নিরাপদ ব্যবহার", paper: 1 }, { id: 2, name: "গুণগত রসায়ন", paper: 1 }, { id: 3, name: "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন", paper: 1 }, { id: 4, name: "রাসায়নিক পরিবর্তন", paper: 1 }, { id: 5, name: "কর্মমূখী রসায়ন", paper: 1 }, { id: 6, name: "পরিবেশ রসায়ন", paper: 2 }, { id: 7, name: "জৈব রসায়ন", paper: 2 }, { id: 8, name: "পরিমাণগত রসায়ন", paper: 2 }, { id: 9, name: "তড়িৎ রসায়ন", paper: 2 }, { id: 10, name: "অর্থনৈতিক রসায়ন", paper: 2 } ] }, physics: { name: "পদার্থবিজ্ঞান", chapters: [ { id: 1, name: "ভৌত জগত ও পরিমাপ", paper: 1 }, { id: 2, name: "ভেক্টর", paper: 1 }, { id: 3, name: "গতিবিদ্যা", paper: 1 }, { id: 4, name: "নিউটনিয়ান বলবিদ্যা", paper: 1 }, { id: 5, name: "কাজ, শক্তি ও ক্ষমতা", paper: 1 }, { id: 6, name: "মহাকর্ষ ও অভিকর্ষ", paper: 1 }, { id: 7, name: "পদার্থের গাঠনিক ধর্ম", paper: 1 }, { id: 8, name: "পর্যাবৃত্তিক গতি", paper: 1 }, { id: 9, name: "তরঙ্গ", paper: 1 }, { id: 10, name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", paper: 1 }, { id: 11, name: "তাপগতিবিদ্যা", paper: 2 }, { id: 12, name: "স্থির তড়িৎ", paper: 2 }, { id: 13, name: "চল তড়িৎ", paper: 2 }, { id: 14, name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", paper: 2 }, { id: 15, name: "তড়িৎ চৌম্বক আবেশ ও পরিবর্তী প্রবাহ", paper: 2 }, { id: 16, name: "জ্যামিতিক আলোকবিজ্ঞান", paper: 2 }, { id: 17, name: "ভৌত আলোকবিজ্ঞা", paper: 2 }, { id: 18, name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", paper: 2 }, { id: 19, name: "পরমাণুর মডেল এবং নিউক্লিয়ার পদার্থবিজ্ঞান", paper: 2 }, { id: 20, name: "সেমিকন্ডাক্টর ও ইলেকট্রনিকস", paper: 2 }, { id: 21, name: "জ্যোতির্বিজ্ঞান", paper: 2 } ] } };
         const trackableItems = ["মূল বই", "Class", "Rev Class", "Meditrics", "MQB (Unmesh)", "Retina QB", "Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam", "রিভিশন ১", "রিভিশন ২"];
         const mainStudyItems = ["মূল বই", "Class", "Meditrics"]; const revisionItems = ["রিভিশন ১", "রিভিশন ২", "Rev Class"]; const examItems = ["Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam"]; const qbItems = ["MQB (Unmesh)", "Retina QB"];
-        const TARGET_DATE_STRING = '2025-12-12'; // Used for countdown info
+        const TARGET_DATE_STRING = '2025-12-12';
 
-        // --- Calculation Logic (Unchanged) ---
-        const getRawPercentForStatus = (status) => (typeof status === 'number' && status >= 0 && status <= 4) ? status * 20 : 0;
+        const getRawPercentForStatus = (status) => (status >= 0 && status <= 5) ? status * 20 : 0;
         const normalizeRawTo100 = (raw) => raw <= 0 ? 0 : Math.min(100, (raw / 80) * 100);
         function calculateProgress(subjectKey, itemsToCount) { let currentItems = [...itemsToCount]; if (subjectKey === 'physics') currentItems = currentItems.filter(item => item !== 'মূল বই'); const subjectData = syllabusData[subjectKey]; if (!subjectData || !subjectData.chapters) return { overall: 0, paper1: 0, paper2: 0 }; const mulBoiIndex = trackableItems.indexOf("মূল বই"); const meditricsIndex = trackableItems.indexOf("Meditrics"); const useMaxLogic = currentItems.includes("মূল বই") && currentItems.includes("Meditrics"); let itemIndices = currentItems.map(item => trackableItems.indexOf(item)).filter(i => i >= 0); let p1Sum = 0, p1Count = 0, p2Sum = 0, p2Count = 0; subjectData.chapters.forEach(ch => { let rawSum = 0; let itemsForAvg = itemIndices.length; if (useMaxLogic) { const nonSpecial = itemIndices.filter(i => i !== mulBoiIndex && i !== meditricsIndex); nonSpecial.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); const mulBoiStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${mulBoiIndex}`] ?? 0); const medStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${meditricsIndex}`] ?? 0); rawSum += Math.max(mulBoiStatus, medStatus); itemsForAvg = nonSpecial.length + 1; } else { itemIndices.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); } const normalized = normalizeRawTo100(itemsForAvg > 0 ? rawSum / itemsForAvg : 0); if (ch.paper === 1) { p1Sum += normalized; p1Count++; } else { p2Sum += normalized; p2Count++; } }); const paper1 = p1Count > 0 ? p1Sum / p1Count : 0; const paper2 = p2Count > 0 ? p2Sum / p2Count : 0; const overall = (p1Count + p2Count > 0) ? (p1Sum + p2Sum) / (p1Count + p2Count) : 0; return { overall, paper1, paper2 }; }
         const calculateComposite = () => { const subjects = Object.keys(syllabusData); if(!subjects.length) return { mainAvg: 0, revAvg: 0, examAvg: 0, qbAvg: 0, composite: 0 }; const mainAvg = calculateGlobalAverage(s => calculateProgress(s, mainStudyItems)).overall; const revAvg = calculateGlobalAverage(s => calculateProgress(s, revisionItems)).overall; const examAvg = calculateGlobalAverage(s => calculateProgress(s, examItems)).overall; const qbAvg = calculateGlobalAverage(s => calculateProgress(s, qbItems)).overall; return { mainAvg, revAvg, examAvg, qbAvg, composite: (mainAvg + revAvg + examAvg + qbAvg) / 4 }; };
         const calculateGlobalAverage = (fn) => { const subjects = Object.keys(syllabusData); let total = 0; subjects.forEach(key => { total += fn(key).overall; }); return { overall: total / (subjects.length || 1) }; };
-        const findWeakestSubject = () => { const subjects = Object.keys(syllabusData); if (!subjects.length) return null; let weakest = { name: '', score: 101 }; subjects.forEach(key => { const progress = calculateProgress(key, [...mainStudyItems, ...revisionItems, ...examItems, ...qbItems]); if (progress.overall < weakest.score) { weakest = { name: syllabusData[key].name, score: progress.overall }; } }); return weakest; };
+        const calculateStudyStreak = () => { const timestamps = Object.keys(state.userData).filter(k => k.startsWith('timestamp_s_')).map(k => state.userData[k]).filter(Boolean); if (timestamps.length === 0) return 0; const uniqueDays = [...new Set(timestamps.map(d => { try { const dt = new Date(d); return dt.toISOString().slice(0,10); } catch(e) { return null; } }))].filter(Boolean).sort().reverse(); const todayISO = (new Date()).toISOString().slice(0,10); let streak = 0; let cursor = new Date(todayISO); let cursorISO = todayISO; let firstDayFound = uniqueDays.includes(todayISO); if(firstDayFound) { for (const day of uniqueDays) { if (day === cursorISO) { streak++; cursor.setUTCDate(cursor.getUTCDate() - 1); cursorISO = cursor.toISOString().slice(0,10); } else if (day < cursorISO) { break; } } } return streak; };
 
-        // --- UI Rendering Functions (Unchanged) ---
-        const createInfoButton = (data) => { const btn = document.createElement('button'); btn.className = 'info-btn'; btn.textContent = '?'; Object.entries(data).forEach(([k, v]) => { btn.dataset[k] = Array.isArray(v) ? JSON.stringify(v) : v; }); return btn; };
+        const createInfoButton = (data) => { const btn = document.createElement('button'); btn.className = 'info-btn'; btn.textContent = '?'; Object.entries(data).forEach(([k, v]) => { try { btn.dataset[k] = Array.isArray(v) ? JSON.stringify(v) : v; } catch(e){ console.warn(`Failed to set dataset for ${k}`, e); }}); return btn; };
         const createProgressBar = (p, color) => `<div class="w-full progress-bar-container"><div class="progress-bar pb-gradient-${color} h-2" style="width: ${p.toFixed(1)}%"></div></div>`;
-        const createBreakdownProgressBar = (data, title, colors=['sky','peach','lav']) => `<div class="flex flex-col gap-2"> <div class="font-bold text-sm">${title}</div> <div class="grid grid-cols-[40px,1fr,45px] items-center gap-2 text-xs"> <span>১ম পত্র</span>${createProgressBar(data.paper1, colors[0])}<span class="text-right font-medium">${data.paper1.toFixed(1)}%</span> <span>২য় পত্র</span>${createProgressBar(data.paper2, colors[1])}<span class="text-right font-medium">${data.paper2.toFixed(1)}%</span> <span class="font-bold">মোট</span>${createProgressBar(data.overall, colors[2])}<span class="text-right font-bold">${data.overall.toFixed(1)}%</span> </div></div>`;
+        const createSingleProgressBarHTML = (value, title, color) => `<div class="border border-secondary rounded-md p-2"> <div class="text-xs flex justify-between items-center mb-1"><span>${title}</span> <strong class="font-bold">${value.toFixed(1)}%</strong></div> ${createProgressBar(value, color)}</div>`;
+        const createBreakdownProgressBar = (data, title, colors=['sky','peach','lav']) => `<div class="flex flex-col gap-2"> <div class="font-bold text-sm">${title}</div> <div class="grid grid-cols-[60px,1fr,45px] items-center gap-2 text-xs"> <span>১ম পত্র</span>${createProgressBar(data.paper1, colors[0])}<span class="text-right font-medium">${data.paper1.toFixed(1)}%</span> <span>২য় পত্র</span>${createProgressBar(data.paper2, colors[1])}<span class="text-right font-medium">${data.paper2.toFixed(1)}%</span> <span class="font-bold">মোট</span>${createProgressBar(data.overall, colors[2])}<span class="text-right font-bold">${data.overall.toFixed(1)}%</span> </div></div>`;
         const createCircularProgressBar = (p, color) => `<svg class="subject-progress-svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="var(--progress-track)" stroke-width="5" fill="none" /><circle cx="32" cy="32" r="28" stroke="${color}" stroke-width="5" fill="none" stroke-dasharray="${2 * Math.PI * 28}" stroke-dashoffset="${(1 - (p/100)) * 2 * Math.PI * 28}" stroke-linecap="round" /></svg>`;
-        function renderSubjectSelector() { const container = document.getElementById('subject-selector'); if(!container) return; const fragment = document.createDocumentFragment(); const colors = ['#34d399', '#f97316', '#38bdf8']; Object.keys(syllabusData).forEach((key, idx) => { const btn = document.createElement('div'); const isActive = state.activeSubject === key; const progress = calculateProgress(key, mainStudyItems); btn.className = `subject-progress-btn ${isActive ? 'active' : ''}`; btn.dataset.subject = key; btn.innerHTML = `<div class="relative">${createCircularProgressBar(progress.overall, colors[idx % colors.length])}<div class="absolute inset-0 flex items-center justify-center font-bold text-primary">${progress.overall.toFixed(0)}%</div></div><span class="font-semibold text-sm">${syllabusData[key].name}</span>`; btn.onclick = () => { if (state.activeSubject !== key) { state.activeSubject = key; renderAll(); }}; fragment.appendChild(btn); }); container.innerHTML = ''; container.appendChild(fragment); }
-        function renderProgressCards() {
-            const subject = state.activeSubject;
-            const mainProgEl = document.getElementById('selected-subject-main-progress'); if(mainProgEl) mainProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, mainStudyItems), 'মূল বই ও লেকচার') + createBreakdownProgressBar(calculateProgress(subject, revisionItems), 'রিভিশন', ['rose', 'amber', 'lav']);
-            const examProgEl = document.getElementById('selected-subject-exam-progress'); if(examProgEl) examProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, examItems), 'সকল পরীক্ষা', ['peach', 'cyan', 'mint']);
-            const qbProgEl = document.getElementById('selected-subject-qb-progress'); if(qbProgEl) qbProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, ["MQB (Unmesh)"]), 'MQB (Unmesh)', ['amber', 'amber', 'amber']) + createBreakdownProgressBar(calculateProgress(subject, ["Retina QB"]), 'Retina QB', ['cyan', 'cyan', 'cyan']);
 
-            const composite = calculateComposite();
-            const totalEl = document.getElementById('syllabus-total-container');
-            if(totalEl) {
-                totalEl.innerHTML = `<div class="flex flex-col gap-2">
-                    <div class="font-bold text-sm">Total Composite Score</div>
-                    <div class="grid grid-cols-[1fr,45px] items-center gap-2 text-xs">
-                        ${createProgressBar(composite.composite, 'lav')}
-                        <span class="text-right font-bold">${composite.composite.toFixed(1)}%</span>
-                    </div>
-                </div>`;
-            }
-            const globalSummary = document.getElementById('global-summary-container');
-            if(globalSummary) {
-                globalSummary.innerHTML = `
-                    <div class="border border-secondary rounded-md p-2">
-                        <div class="text-xs flex justify-between items-center mb-1"><span>Main Study</span> <strong class="font-bold">${composite.mainAvg.toFixed(1)}%</strong></div>
-                        ${createProgressBar(composite.mainAvg, "mint")}
-                    </div>
-                    <div class="border border-secondary rounded-md p-2">
-                        <div class="text-xs flex justify-between items-center mb-1"><span>Revision</span> <strong class="font-bold">${composite.revAvg.toFixed(1)}%</strong></div>
-                        ${createProgressBar(composite.revAvg, "sky")}
-                    </div>
-                    <div class="border border-secondary rounded-md p-2">
-                        <div class="text-xs flex justify-between items-center mb-1"><span>Exams</span> <strong class="font-bold">${composite.examAvg.toFixed(1)}%</strong></div>
-                        ${createProgressBar(composite.examAvg, "peach")}
-                    </div>
-                    <div class="border border-secondary rounded-md p-2">
-                        <div class="text-xs flex justify-between items-center mb-1"><span>Question Banks</span> <strong class="font-bold">${composite.qbAvg.toFixed(1)}%</strong></div>
-                        ${createProgressBar(composite.qbAvg, "amber")}
-                    </div>`;
-            }
+        function renderSubjectSelector() { const container = document.getElementById('subject-selector'); if(!container) return; const fragment = document.createDocumentFragment(); const colors = ['#34d399', '#f97316', '#38bdf8']; Object.keys(syllabusData).forEach((key, idx) => { const btn = document.createElement('div'); const isActive = state.activeSubject === key; const progress = calculateProgress(key, mainStudyItems); btn.className = `subject-progress-btn ${isActive ? 'active' : ''}`; btn.dataset.subject = key; btn.innerHTML = `<div class="relative">${createCircularProgressBar(progress.overall, colors[idx % colors.length])}<div class="absolute inset-0 flex items-center justify-center font-bold text-primary">${progress.overall.toFixed(0)}%</div></div><span class="font-semibold text-sm">${syllabusData[key].name}</span>`; btn.onclick = () => { if (state.activeSubject !== key) { state.activeSubject = key; renderAll(); }}; fragment.appendChild(btn); }); container.innerHTML = ''; container.appendChild(fragment); }
+        function renderProgressCards() { const subject = state.activeSubject; const mainProgEl = document.getElementById('selected-subject-main-progress'); if(mainProgEl) mainProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, mainStudyItems), 'মূল বই ও লেকচার') + createBreakdownProgressBar(calculateProgress(subject, revisionItems), 'রিভিশন', ['rose', 'amber', 'lav']); const examProgEl = document.getElementById('selected-subject-exam-progress'); if(examProgEl) examProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, examItems), 'সকল পরীক্ষা', ['peach', 'cyan', 'mint']); const qbProgEl = document.getElementById('selected-subject-qb-progress'); if(qbProgEl) qbProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, ["MQB (Unmesh)"]), 'MQB (Unmesh)', ['amber', 'amber', 'amber']) + createBreakdownProgressBar(calculateProgress(subject, ["Retina QB"]), 'Retina QB', ['cyan', 'cyan', 'cyan']); const composite = calculateComposite(); const totalEl = document.getElementById('overall-progress-container'); if(totalEl) { totalEl.innerHTML = `<div class="border border-secondary rounded p-2 mb-3"><div class="font-bold text-sm mb-1">সার্বিক অগ্রগতি</div><div class="grid grid-cols-[1fr,45px] items-center gap-2 text-xs">${createProgressBar(composite.composite, 'lav')}<span class="text-right font-bold">${composite.composite.toFixed(1)}%</span></div></div>`; } const globalSummary = document.getElementById('global-summary-container'); if(globalSummary) { globalSummary.innerHTML = createSingleProgressBarHTML(composite.mainAvg, "মূল পাঠ", "mint") + createSingleProgressBarHTML(composite.revAvg, "রিভিশন", "sky") + createSingleProgressBarHTML(composite.examAvg, "পরীক্ষা", "peach") + createSingleProgressBarHTML(composite.qbAvg, "প্রশ্নব্যাংক", "amber"); } }
+        
+        // ==========================================================
+        // 💡 MODIFIED FUNCTION for View-Only
+        // ==========================================================
+        function renderSyllabusContent() {
+            const container = document.getElementById('syllabus-content'); if(!container) return;
+            const fragment = document.createDocumentFragment();
+            const subjectKey = state.activeSubject;
+            const chaptersByPaper = syllabusData[subjectKey]?.chapters?.reduce((acc, chap) => { (acc[chap.paper] = acc[chap.paper] || []).push(chap); return acc; }, {});
+            if(!chaptersByPaper) { container.innerHTML = 'No chapters found.'; return; }
+            
+            const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`;
+            
+            Object.entries(chaptersByPaper).forEach(([paper, chapters]) => {
+                const details = document.createElement('details');
+                details.dataset.paper = paper;
+                details.open = state.syllabusOpenState[`${subjectKey}-${paper}`] !== false;
+                const paperProgress = calculateProgress(subjectKey, mainStudyItems);
+                const currentPaperProgress = (paper == 1) ? paperProgress.paper1 : paperProgress.paper2;
+                details.innerHTML = `<summary class="flex justify-between items-center p-3 border border-secondary rounded-lg mb-2 cursor-pointer transition-all hover:bg-main"><div class="font-bold flex items-center">${paper}ম পত্র <span class="text-sm font-normal text-muted ml-2" data-paper-percent>(${currentPaperProgress.toFixed(1)}%)</span> <span class="ml-2" data-info-btn-id="paper-${paper}-info-btn"></span></div><div class="w-1/3" data-paper-progress-bar="${paper}">${createProgressBar(currentPaperProgress, paper == 1 ? 'sky' : 'peach')}</div></summary>`;
+                
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = 'overflow-x-auto';
+                const table = document.createElement('table');
+                table.className = "w-full";
+                table.innerHTML = `<thead><tr class="border-b border-border-primary"><th class="w-1/4 text-left p-2">অধ্যায়</th>${trackableItems.map(h => `<th class="text-center p-2">${h}</th>`).join('')}</tr></thead>`;
+                
+                const tbody = document.createElement('tbody');
+                chapters.forEach(chapter => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-border-secondary";
+                    let cells = `<td class="font-medium p-2">${chapter.name}</td>`;
+                    
+                    trackableItems.forEach((item, i) => {
+                        const key = `s_${subjectKey}_${chapter.id}_${i}`;
+                        const status = Number(state.userData?.[key] ?? 0);
+                        
+                        const isDone = status === 5;
+                        const isWont = status === 6;
+                        let statusDisplay;
+
+                        // --- 💡 This is the main change ---
+                        // Replaced clickable <button> with static <div>
+                        if (isWont) {
+                            statusDisplay = `<div class="status-display-box wont mx-auto">✖</div>`;
+                        } else if (isDone) {
+                            statusDisplay = `<div class="status-display-box done mx-auto">${tickIconSVG}</div>`;
+                        } else {
+                            const percentage = status * 20;
+                            statusDisplay = `<div class="status-display-box pending mx-auto">${percentage}%</div>`;
+                        }
+                        // --- End of change ---
+
+                        cells += `<td class="text-center p-2">${statusDisplay}</td>`;
+                    });
+                    tr.innerHTML = cells;
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                tableWrapper.appendChild(table);
+                details.appendChild(tableWrapper);
+                fragment.appendChild(details);
+            });
+            container.innerHTML = '';
+            container.appendChild(fragment);
+            setupInfoButtons(); // Info buttons still work
         }
         
-        // --- renderSyllabusContent() function REMOVED ---
+        function renderStudyStreak() { const container = document.getElementById('streak-container'); if (!container) return; const streak = calculateStudyStreak(); if (streak > 0) { container.innerHTML = `<div class="text-sm flex items-center justify-center gap-2 border border-secondary rounded-md p-2"> <span class="text-lg">🔥</span> <span class="font-bold">আপনি ${streak}-দিনের স্টাডি স্ট্রিকে আছেন!</span> <span class="text-lg">🔥</span> </div>`; } else { container.innerHTML = ''; } }
+        
+        function getWeekDateRange(refDateString) {
+            const refDate = new Date(refDateString);
+            const dayOfWeek = refDate.getDay(); 
+            let firstDayOffset;
+            // This setting is now read-only from the state, not changeable
+            if (state.settings.weekStartDay === 'monday') {
+                firstDayOffset = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
+            } else {
+                firstDayOffset = 0 - dayOfWeek;
+            }
+            const first = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() + firstDayOffset);
+            first.setHours(0,0,0,0);
+            const last = new Date(first.getFullYear(), first.getMonth(), first.getDate() + 6);
+            last.setHours(23,59,59,999);
+            return { 
+                start: first, 
+                end: last, 
+                startFormatted: first.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long'}), 
+                endFormatted: last.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long'}) 
+            };
+        }
+        function formatMinutes(minutes) { if (!minutes || minutes <= 0) return ''; const h = Math.floor(minutes / 60); const m = minutes % 60; let result = ''; if (h > 0) result += `${h} ঘন্টা `; if (m > 0) result += `${m} মিনিট`; return result.trim(); }
+        
+        // ==========================================================
+        // 💡 MODIFIED FUNCTION for View-Only
+        // ==========================================================
+        function renderGoalsCard() {
+            const container = document.getElementById('goal-tracker-card');
+            if (!container) return;
+            const allGoals = state.userData.goals || [];
+            const todayISO = new Date().toISOString().slice(0, 10);
+            const today = new Date(todayISO);
+            today.setHours(0,0,0,0);
+            const weekRange = getWeekDateRange(state.currentWeeklyViewDate);
 
-        function renderAnalytics() { const container = document.getElementById('analytics-content'); if(!container) return; container.innerHTML = ''; const weakest = findWeakestSubject(); if(weakest) { container.innerHTML = `<div class="mb-3"><p class="text-xs text-muted">Weakest Subject</p><p class="font-bold text-base text-red-500">${weakest.name} <span class="text-sm font-normal">(${weakest.score.toFixed(1)}%)</span></p></div>`; } else { container.innerHTML = '<p class="text-muted text-xs">Not enough data for analysis.</p>'; } }
+            // --- 1. Filter Goals (Same as before) ---
+            const todayGoals = allGoals.filter(g => g.dueDate === todayISO);
+            const weeklyGoalsForCurrentView = allGoals.filter(g => {
+                if (!g.dueDate) return false;
+                const goalDate = new Date(g.dueDate);
+                return goalDate >= weekRange.start && goalDate <= weekRange.end;
+            });
+            const overdueGoals = allGoals.filter(g => { 
+                if (!g.dueDate || g.status === 5 || g.status === 6) return false; 
+                const goalDate = new Date(g.dueDate);
+                return goalDate < today;
+            });
+            
+            let historyGoals;
+            if (state.activeGoalTab === 'history') {
+                const finishedGoals = allGoals.filter(g => g.status === 5 || g.status === 6);
+                if (state.historyViewState.mode === 'specificDate' && state.historyViewState.selectedDate) {
+                    historyGoals = finishedGoals.filter(g => {
+                        const dateRef = g.completedAt || g.createdAt;
+                        return dateRef && dateRef.startsWith(state.historyViewState.selectedDate);
+                    });
+                } else {
+                    historyGoals = finishedGoals.filter(g => {
+                        const dateRef = g.completedAt || g.createdAt;
+                        if (!dateRef) return false;
+                        const goalDate = new Date(dateRef);
+                        const sevenDaysAgo = new Date();
+                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                        sevenDaysAgo.setHours(0,0,0,0);
+                        return goalDate >= sevenDaysAgo;
+                    });
+                }
+            }
+
+            // --- 2. Calculate Progress (Same as before) ---
+            const getProgress = (goals) => {
+                if (goals.length === 0) return 0;
+                const completableTasks = goals.filter(g => g.status !== 6).length;
+                if (completableTasks === 0) return 0; 
+                const completedTasks = goals.filter(g => g.status === 5).length;
+                return (completedTasks / completableTasks) * 100;
+            };
+            const todayProgress = getProgress(todayGoals);
+            const weeklyProgress = getProgress(weeklyGoalsForCurrentView);
+            const overdueProgress = getProgress(overdueGoals);
+            const allVisibleGoals = [...todayGoals, ...weeklyGoalsForCurrentView, ...overdueGoals];
+            const consolidatedProgress = getProgress(allVisibleGoals);
+            
+            // --- 3. Define Icons & SVGs (Same as before) ---
+            const tickSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.052-.143z" clip-rule="evenodd" /></svg>`;
+            const calendarSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c0-.414.336-.75.75-.75h10.5a.75.75 0 01.75.75v1.25c0 .414-.336.75-.75.75H5.5a.75.75 0 01-.75-.75V7.5z" clip-rule="evenodd" /></svg>`;
+
+            // --- 4. Render Main Card Structure (Same as before) ---
+            container.innerHTML = `
+                <h2 class="text-base font-bold mb-3 flex justify-between items-center">দৈনিক ও সাপ্তাহিক লক্ষ্য <span id="goal-info-btn"></span></h2>
+                <div class="mb-3">${createProgressBar(consolidatedProgress, 'mint')}</div>
+                <div class="flex border-b border-secondary mb-3">
+                    <button data-tab="today" class="goal-tab ${state.activeGoalTab === 'today' ? 'active' : ''}">আজকের লক্ষ্য</button>
+                    <button data-tab="weekly" class="goal-tab ${state.activeGoalTab === 'weekly' ? 'active' : ''}">সাপ্তাহিক লক্ষ্য</button>
+                    <button data-tab="custom" class="goal-tab ${state.activeGoalTab === 'custom' ? 'active' : ''}">অন্যান্য</button>
+                    <button data-tab="history" class="goal-tab ${state.activeGoalTab === 'history' ? 'active' : ''}">ইতিহাস</button>
+                </div>
+                <div id="goal-tab-content"></div>
+            `;
+
+            // --- 5. Render Tab-Specific Content (MODIFIED) ---
+            const contentContainer = container.querySelector('#goal-tab-content');
+            let goalsToShow, progressToShow;
+
+            switch(state.activeGoalTab) {
+                case 'today': goalsToShow = todayGoals; progressToShow = todayProgress; break;
+                case 'weekly': goalsToShow = weeklyGoalsForCurrentView; progressToShow = weeklyProgress; break;
+                case 'custom': goalsToShow = overdueGoals; progressToShow = overdueProgress; break;
+                case 'history': break; // Handled below
+            }
+
+            // --- 💡 This is the main change for the list ---
+            // Replaced clickable buttons with static icons
+            const createGoalListHTML = (goals) => {
+                if (goals.length === 0) {
+                    return `<p class="text-center text-muted text-sm py-4">কোনো লক্ষ্য যোগ করা হয়নি।</p>`;
+                }
+                const groupedGoals = goals.reduce((acc, goal) => {
+                    const dateKey = goal.dueDate || 'No Date';
+                    if (!acc[dateKey]) acc[dateKey] = [];
+                    acc[dateKey].push(goal);
+                    return acc;
+                }, {});
+
+                const sortedDates = Object.keys(groupedGoals).sort((a, b) => {
+                    if (a === 'No Date') return 1; if (b === 'No Date') return -1;
+                    return new Date(a) - new Date(b);
+                });
+
+                return sortedDates.map(date => {
+                    const dateLabel = (date === 'No Date') ? 'তারিখবিহীন' : (date === todayISO ? 'আজ' : new Date(date).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long' }));
+                    return `
+                        <h3 class="font-semibold text-xs text-muted pt-3 pb-1 px-1">${dateLabel}</h3>
+                        <ul class="goal-list-sub space-y-2 mb-4">
+                            ${groupedGoals[date].map((goal, index) => {
+                                const serialNumber = index + 1;
+                                const status = Number(goal.status || 0);
+                                const isDone = status === 5;
+                                const isWont = status === 6;
+                                
+                                let statusIcon;
+                                if (isWont) {
+                                    statusIcon = `<div class="goal-tick-icon wont">✖</div>`;
+                                } else if (isDone) {
+                                    statusIcon = `<div class="goal-tick-icon">${tickSVG}</div>`;
+                                } else {
+                                    statusIcon = `<div class="goal-tick-icon"><span>${serialNumber}</span></div>`;
+                                }
+
+                                return `
+                                <li class="goal-list-item ${isDone ? 'completed' : ''}" data-goal-id="${goal.id}">
+                                    ${statusIcon}
+                                    <span class="goal-title">${goal.title}</span>
+                                    <span class="goal-time">${formatMinutes(goal.estimateTimeMin)}</span>
+                                    </li>`;
+                            }).join('')}
+                        </ul>`;
+                }).join('');
+            };
+            // --- End of change ---
+
+            if (state.activeGoalTab === 'history') {
+                contentContainer.innerHTML = `
+                    <div class="flex items-center justify-between gap-2 mb-3 text-xs">
+                        <div class="flex items-center gap-2">
+                            <input type="date" id="history-date-picker" class="goal-add-input w-auto" value="${state.historyViewState.selectedDate || ''}">
+                            <button id="view-specific-date-btn" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-md">দেখুন</button>
+                        </div>
+                        <button id="view-last-7-days-btn" class="px-2 py-1 ${state.historyViewState.mode === 'last7days' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'} rounded-md">গত ৭ দিন</button>
+                    </div>
+                    <div id="goal-list-container">
+                    ${(historyGoals.length === 0 ? 
+                        `<p class="text-center text-muted text-sm py-4">এই তারিখে কোনো লক্ষ্য সম্পন্ন হয়নি।</p>` : 
+                        `<ul class="space-y-2 mb-4">${historyGoals.sort((a,b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt)).map(goal => {
+                            const isDone = goal.status === 5;
+                            const buttonIcon = isDone ? `<span class="goal-tick-icon" style="background: #22c55e; border-color: #15803d; color: #fff;">${tickSVG}</span>` : `<span class="goal-tick-icon wont">✖</span>`;
+                            const dateText = new Date(goal.completedAt || goal.createdAt).toLocaleDateString('bn-BD');
+                            return `<li class="goal-list-item ${isDone ? 'completed' : ''}">${buttonIcon}<span class="goal-title">${goal.title}</span><span class="text-xs text-muted">${dateText}</span></li>`
+                        }).join('')}</ul>`
+                    )}
+                    </div>`;
+            } else {
+                let tabHeader = '', progressComparisonHTML = '';
+                if (state.activeGoalTab === 'weekly') {
+                    const prevWeekRef = new Date(weekRange.start); prevWeekRef.setDate(prevWeekRef.getDate() - 1);
+                    const previousWeekRange = getWeekDateRange(prevWeekRef.toISOString());
+                    const previousWeekGoals = allGoals.filter(g => g.dueDate && new Date(g.dueDate) >= previousWeekRange.start && new Date(g.dueDate) <= previousWeekRange.end);
+                    if (previousWeekGoals.filter(g => g.status !== 6).length > 0) { 
+                        const previousWeekProgress = getProgress(previousWeekGoals);
+                        const progressDifference = weeklyProgress - previousWeekProgress;
+                        if (progressDifference > 0.1) progressComparisonHTML = `<span class="text-green-500 font-semibold ml-2">(গত সপ্তাহ থেকে ${progressDifference.toFixed(0)}% বেশি)</span>`;
+                        else if (progressDifference < -0.1) progressComparisonHTML = `<span class="text-red-500 font-semibold ml-2">(গত সপ্তাহ থেকে ${Math.abs(progressDifference).toFixed(0)}% কম)</span>`;
+                    }
+                    tabHeader = `
+                    <div class="text-xs text-center text-muted mb-2 font-semibold flex justify-center items-center gap-2">
+                        <label id="week-selector-label" class="cursor-pointer flex items-center gap-2"><span>${weekRange.startFormatted} - ${weekRange.endFormatted}</span>${calendarSVG}</label>
+                        <input type="date" id="week-selector-input" class="hidden absolute" value="${state.currentWeeklyViewDate.slice(0,10)}">
+                    </div>`;
+                }
+                
+                // --- 💡 MODIFIED: <form> for adding goals is REMOVED ---
+                contentContainer.innerHTML = `
+                    ${tabHeader}
+                    <div class="mb-3">
+                        <div class="text-xs flex justify-between items-center mb-1">
+                            <span>${{'today':'আজকের', 'weekly':'সাপ্তাহিক', 'custom':'অন্যান্য'}[state.activeGoalTab]} অগ্রগতি ${progressComparisonHTML}</span>
+                            <strong>${progressToShow.toFixed(0)}%</strong>
+                        </div>
+                        ${createProgressBar(progressToShow, 'sky')}
+                    </div>
+                    <div id="goal-list-container">${createGoalListHTML(goalsToShow)}</div>
+                    `;
+            }
+            attach('#goal-info-btn', { modalTitle: "দৈনিক ও সাপ্তাহিক লক্ষ্য", modalDesc: "আপনার দৈনন্দিন এবং সাপ্তাহিক লক্ষ্যগুলো এখানে ট্র্যাক করুন। সম্পন্ন করা লক্ষ্যগুলো 'ইতিহাস' ট্যাবে পর্যালোচনার জন্য দেখানো হয়।", modalItems: ["লক্ষ্য যোগ করুন এবং তারিখ ও সময়সীমা দিন।", "লক্ষ্য সম্পন্ন করতে বৃত্তে ক্লিক করুন (০% -> ২০% ... -> Done ✓)।", "সবশেষে 'Won't Do ✖' অপশন আসবে।","ট্র্যাশ আইকন ব্যবহার করে লক্ষ্য মুছে ফেলুন."] });
+        }
+        
+        const attach = (selector, data) => { try { const el = document.querySelector(selector); if(el) { el.innerHTML = ''; el.append(createInfoButton(data)); }} catch(e){ console.warn(`Failed attaching info btn to ${selector}`, e)} };
         
         function setupInfoButtons() {
-            const attach = (selector, data) => { const el = document.querySelector(selector); if(el) { el.innerHTML = ''; el.append(createInfoButton(data)); }};
-            attach('#subject-choice-info-btn', {modalTitle: "Subject Choice", modalDesc: "প্রতিটি বিষয়ের মূল বই, ক্লাস ও মেডিট্রিক্স এর গড় অগ্রগতি এখানে দেখানো হয়েছে।", modalItems: mainStudyItems});
-            attach('#main-progress-info-btn', {modalTitle: "Main Progress Calculation", modalDesc: "মূল বই ও ক্লাস লেকচারের গড় অগ্রগতি। বায়োলজি ও কেমিস্ট্রির জন্য মূল বই ও মেডিট্রিক্স এর মধ্যে সর্বোচ্চটি এবং ফিজিক্সে মূল বই বাদ দিয়ে গণনা করা হয়।", modalItems: mainStudyItems.concat(revisionItems)});
-            attach('#exam-progress-info-btn', {modalTitle: "Exam Progress Calculation", modalDesc: "সকল ধরণের পরীক্ষার গড় অগ্রগতি।", modalItems: examItems});
-            attach('#qb-progress-info-btn', {modalTitle: "Question Bank Calculation", modalDesc: "সকল প্রশ্নব্যাংক সমাধানের গড় অগ্রগতি।", modalItems: qbItems});
-            attach('#global-summary-info-btn', {modalTitle: "Global Summary & Composite", modalDesc: "Total Composite: সকল বিষয়ের Main Study, Revision, Exams, এবং QB - এই চারটি বিভাগের সার্বিক অগ্রগতির গড়। Global Summaries: প্রতিটি বিভাগের সকল বিষয়ের গড় অগ্রগতি।", modalItems: ["Total Composite Score", "Global Main Study", "Global Revision", "Global Exams", "Global Question Banks"]});
-            attach('#analytics-info-btn', {modalTitle: "Mini Analytics", modalDesc: "Weakest Subject: সকল বিভাগের গড় অগ্রগতির ভিত্তিতে সবচেয়ে পিছিয়ে থাকা বিষয়।", modalItems: []});
-            attach('#countdown-info-btn', { modalTitle: "Countdown Target", modalDesc: `Counting down to: ${TARGET_DATE_STRING}`, modalItems: [] });
-            // Paper 1 & 2 info buttons REMOVED
+            attach('#subject-choice-info-btn', {modalTitle: "বিষয় নির্বাচন", modalDesc: "এখানে প্রতিটি বিষয়ের মূল পাঠের গড় অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('#main-progress-info-btn', {modalTitle: "মূল অগ্রগতি গণনা", modalDesc: "মূল বই ও ক্লাস লেকচারের গড় অগ্রগতি। বায়োলজি ও কেমিস্ট্রির জন্য মূল বই ও মেডিট্রিক্স এর মধ্যে সর্বোচ্চটি এবং ফিজিক্সে মূল বই বাদ দিয়ে গণনা করা হয়।", modalItems: mainStudyItems.concat(revisionItems)});
+            attach('#exam-progress-info-btn', {modalTitle: "পরীক্ষার অগ্রগতি গণনা", modalDesc: "সকল ধরণের পরীক্ষার গড় অগ্রগতি।", modalItems: examItems});
+            attach('#qb-progress-info-btn', {modalTitle: "প্রশ্নব্যাংক গণনা", modalDesc: "সকল প্রশ্নব্যাংক সমাধানের গড় অগ্রগতি।", modalItems: qbItems});
+            attach('#global-summary-info-btn', {modalTitle: "সার্বিক সারাংশ ও Composite", modalDesc: "সার্বিক অগ্রগতি (Composite): সকল বিষয়ের Main Study, Revision, Exams, এবং QB - এই চারটি বিভাগের সার্বিক অগ্রগতির গড়।", modalItems: ["Overall Progress", "Global Main Study", "Global Revision", "Global Exams", "Global Question Banks"]});
+            attach('[data-info-btn-id="paper-1-info-btn"]', {modalTitle: "১ম পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ১ম পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('[data-info-btn-id="paper-2-info-btn"]', {modalTitle: "২য় পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ২য় পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
+            attach('#countdown-info-btn', { modalTitle: "Countdown Target", modalDesc: `Counting down to: ${TARGET_DATE_STRING}`, modalItems: [] }); 
+        }
+        
+        // All data-writing functions (updateState, updateSetting for DB) are removed.
+        // This is a view-only setting update, it will not be saved.
+        function updateSetting(key, value) {
+            state.settings[key] = value;
         }
 
-        // --- State Update & Sync Logic REMOVED ---
-        
-        // --- Optimized Rerender for View-Only ---
         function rerenderProgressBarsOnly() { 
             try { 
                 renderSubjectSelector(); 
                 renderProgressCards(); 
-                renderAnalytics(); 
-                // updatePaperSummaryProgress() calls REMOVED
-            } catch (e) { console.error("Error updating visuals:", e); renderAll(); } 
+                renderStudyStreak(); 
+                const subjectKey = state.activeSubject; 
+                const paperProgress = calculateProgress(subjectKey, mainStudyItems); 
+                updatePaperSummaryProgress(1, paperProgress.paper1); 
+                updatePaperSummaryProgress(2, paperProgress.paper2); 
+            } catch (e) { 
+                console.error("Error updating visuals:", e); 
+                renderAll(); 
+            } 
         }
+        function updatePaperSummaryProgress(paperNum, progressValue) { const summaryEl = document.querySelector(`details[data-paper="${paperNum}"] > summary`); if (summaryEl) { const progressDiv = summaryEl.querySelector(`[data-paper-progress-bar="${paperNum}"]`); const percentSpan = summaryEl.querySelector('[data-paper-percent]'); const color = paperNum === 1 ? 'sky' : 'peach'; if (progressDiv) progressDiv.innerHTML = createProgressBar(progressValue, color); if (percentSpan) percentSpan.textContent = `(${progressValue.toFixed(1)}%)`; } }
         
-        // --- updatePaperSummaryProgress() function REMOVED ---
+        // syncPendingWrites function is removed as this page does not write data.
 
-        // --- Utility Functions ---
-        function showToast(message, type = 'success') { const t = document.createElement('div'); t.className = `px-4 py-2 rounded-lg shadow-lg ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white transition-all duration-300 transform opacity-0 translate-y-5`; t.textContent = message; document.getElementById('toast-container').appendChild(t); setTimeout(() => t.classList.remove('opacity-0', 'translate-y-5'), 50); setTimeout(() => { t.classList.add('opacity-0', 'translate-y-5'); t.addEventListener('transitionend', () => t.remove()); }, 3000); }
+        function showToast(message, type = 'success', options = {}) { const container = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `px-3 py-1.5 text-sm rounded-lg shadow-lg ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white transition-all duration-300 transform opacity-0 translate-y-5 flex items-center gap-4`; const messageSpan = document.createElement('span'); messageSpan.textContent = message; t.appendChild(messageSpan); if (options.actionText && options.action) { const actionBtn = document.createElement('button'); actionBtn.textContent = options.actionText; actionBtn.className = 'font-bold underline'; actionBtn.onclick = () => { options.action(); t.remove(); }; t.appendChild(actionBtn); } container.appendChild(t); setTimeout(() => t.classList.remove('opacity-0', 'translate-y-5'), 50); const duration = options.duration || 5000; setTimeout(() => { if (document.body.contains(t)) { t.classList.add('opacity-0', 'translate-y-5'); t.addEventListener('transitionend', () => t.remove()); } }, duration); }
         
-        // --- Note Modal Logic REMOVED ---
-
+        // Note Modal functions are removed.
+        // Sync Modal functions are removed.
+        
+        // ==========================================================
+        // 💡 MODIFIED FUNCTION for View-Only
+        // ==========================================================
         function setupEventHandlers() {
             const infoModalOverlay = document.getElementById('info-modal-overlay');
-            
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsPanel = document.getElementById('settings-panel');
+
             document.body.addEventListener('click', e => {
-                const targetBtn = e.target.closest('button'); if (!targetBtn) return;
+                const target = e.target;
+                const targetBtn = target.closest('button');
+
+                // Settings Panel Toggle
+                if (settingsBtn && settingsPanel) { 
+                    if (settingsBtn.contains(target)) { 
+                        initAudio(); 
+                        settingsPanel.classList.toggle('hidden'); 
+                        return; 
+                    } 
+                    if (!settingsPanel.classList.contains('hidden') && !settingsPanel.contains(target) && !target.closest('.modal-overlay')) { 
+                        settingsPanel.classList.add('hidden'); 
+                    } 
+                }
                 
-                if (targetBtn.classList.contains('info-btn')) { 
-                    const { modalTitle, modalDesc, modalItems } = targetBtn.dataset; 
-                    document.getElementById('info-modal-title').textContent = modalTitle; 
-                    document.getElementById('info-modal-desc').textContent = modalDesc; 
-                    const itemsList = document.getElementById('info-modal-items'); itemsList.innerHTML = ''; 
-                    try { if (modalItems && modalItems.length > 2) { JSON.parse(modalItems).forEach(item => { const li = document.createElement('li'); li.textContent = item; itemsList.appendChild(li); }); } } catch(err) {} 
-                    infoModalOverlay.classList.add('visible'); 
-                    return; 
+                // Sound on click
+                if (target.closest('button, a, .subject-progress-btn, summary, .goal-tab, #week-selector-label')) { 
+                    playTickSound(); 
+                }
+
+                if (targetBtn) {
+                    // Info Button Logic (Remains)
+                    if (targetBtn.classList.contains('info-btn')) {
+                        const data = targetBtn.dataset;
+                        const infoModalOverlay = document.getElementById('info-modal-overlay');
+                        const titleEl = document.getElementById('info-modal-title');
+                        const descEl = document.getElementById('info-modal-desc');
+                        const itemsEl = document.getElementById('info-modal-items');
+
+                        if (infoModalOverlay && titleEl && descEl && itemsEl) {
+                            titleEl.textContent = data.modalTitle || 'তথ্য';
+                            descEl.textContent = data.modalDesc || 'কোনো বর্ণনা নেই।';
+                            itemsEl.innerHTML = ''; 
+                            try {
+                                const items = JSON.parse(data.modalItems || '[]');
+                                if (items.length > 0) {
+                                    items.forEach(item => {
+                                        const li = document.createElement('li');
+                                        li.textContent = item;
+                                        itemsEl.appendChild(li);
+                                    });
+                                } else {
+                                    itemsEl.innerHTML = '<li>N/A</li>';
+                                }
+                            } catch (err) {
+                                console.error("Failed to parse modal items:", err);
+                                itemsEl.innerHTML = '<li>Error loading items.</li>';
+                            }
+                            infoModalOverlay.classList.add('visible');
+                        }
+                        return; 
+                    }
+                    
+                    // ALL OTHER BUTTON LOGIC (task-status-btn, note-btn) is REMOVED.
+                }
+
+                // Goal card interactions (tick, delete, etc.) are REMOVED.
+                const goalCard = target.closest('#goal-tracker-card');
+                if (goalCard) {
+                    const tabBtn = target.closest('.goal-tab');
+                    if (tabBtn) { 
+                        state.activeGoalTab = tabBtn.dataset.tab; 
+                        if(tabBtn.dataset.tab !== 'weekly') state.currentWeeklyViewDate = new Date().toISOString(); 
+                        renderGoalsCard(); 
+                        return; 
+                    }
+                    if(target.id === 'view-specific-date-btn') { const datePicker = document.getElementById('history-date-picker'); if (datePicker && datePicker.value) { state.historyViewState.mode = 'specificDate'; state.historyViewState.selectedDate = datePicker.value; renderGoalsCard(); } }
+                    if(target.id === 'view-last-7-days-btn') { state.historyViewState.mode = 'last7days'; state.historyViewState.selectedDate = null; renderGoalsCard(); }
+                    if(target.closest('#week-selector-label')) { 
+                        const dateInput = document.getElementById('week-selector-input'); 
+                        if(dateInput) { try { dateInput.showPicker(); } catch (e) { console.error("showPicker() failed, falling back to click()", e); dateInput.click(); } } 
+                    } 
                 }
             });
+
+            // --- Other event handlers ---
+            const soundSlider = document.getElementById('sound-volume-slider'); 
+            if (soundSlider) { 
+                soundSlider.addEventListener('input', (e) => updateSoundVolume(e.target.value)); 
+                soundSlider.addEventListener('change', (e) => { 
+                    // No saving, just play sound
+                    playTickSound(); 
+                }); 
+            }
             
+            // Removed submit, change (for goals), drag/drop handlers
+            
+            document.body.addEventListener('change', e => { 
+                const target = e.target; 
+                if (target.id === 'week-selector-input') { 
+                    state.currentWeeklyViewDate = new Date(target.value).toISOString(); 
+                    renderGoalsCard(); 
+                } 
+            });
+
             const closeInfoModal = () => infoModalOverlay.classList.remove('visible');
             infoModalOverlay.addEventListener('click', e => { if (e.target === infoModalOverlay) closeInfoModal(); });
-            document.getElementById('info-modal-close').addEventListener('click', closeInfoModal);
-            
-            // syllabusContent event listener REMOVED
+            document.getElementById('info-modal-close')?.addEventListener('click', closeInfoModal);
+
+            const syllabusContent = document.getElementById('syllabus-content'); if (syllabusContent) { syllabusContent.addEventListener('toggle', (e) => { if (e.target.tagName === 'DETAILS') { const paper = e.target.dataset.paper; if(paper) state.syllabusOpenState[`${state.activeSubject}-${paper}`] = e.target.open; } }, true); }
         }
         
+        // All data-changing goal functions are removed (makeGoalEditable, reorderGoals, addGoal, toggleGoal, deleteGoal, updateGoalDate)
+        
         let countdownInterval;
-        function startCountdown() { if(countdownInterval) clearInterval(countdownInterval); const target = new Date(`${TARGET_DATE_STRING}T00:00:00+06:00`); const countdownEl = document.getElementById('countdown'); if(!countdownEl) return; const tick = () => { const diff = Math.max(0, target - new Date()); const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3); countdownEl.innerHTML = `<div class="text-center"><div class="countdown-num">${d}</div><div class="countdown-label">দিন</div></div><div class="text-center"><div class="countdown-num">${String(h).padStart(2,'0')}</div><div class="countdown-label">ঘণ্টা</div></div><div class="text-center"><div class="countdown-num">${String(m).padStart(2,'0')}</div><div class="countdown-label">মিনিট</div></div><div class="text-center"><div class="countdown-num">${String(s).padStart(2,'0')}</div><div class="countdown-label">সেকেন্ড</div></div>`; }; tick(); countdownInterval = setInterval(tick, 1000); }
-        function setupThemeToggle() { const btn = document.getElementById('theme-toggle-btn'); const meta = document.getElementById('theme-color-meta'); const applyTheme = (theme) => { document.documentElement.setAttribute('data-theme', theme); btn.textContent = theme === 'dark' ? '☀' : '🌙'; meta.content = theme === 'dark' ? '#1c1c1c' : '#f8f7f2'; }; btn.addEventListener('click', () => { const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; localStorage.setItem('theme', newTheme); applyTheme(newTheme); }); applyTheme(localStorage.getItem('theme') || 'dark'); }
-        function setupViewToggle() { const btn = document.getElementById('view-toggle-btn'); const viewportMeta = document.querySelector('meta[name="viewport"]'); const applyView = (mode) => { if (mode === 'desktop') { document.body.classList.add('desktop-view'); viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); } else { document.body.classList.remove('desktop-view'); viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); } }; btn.addEventListener('click', () => { const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; localStorage.setItem('viewMode', newMode); applyView(newMode); }); applyView(localStorage.getItem('viewMode') || 'mobile'); }
+        function startCountdown() { if(countdownInterval) clearInterval(countdownInterval); const target = new Date(`${TARGET_DATE_STRING}T00:00:00+06:00`); const countdownEl = document.getElementById('countdown'); if(!countdownEl) return; const tick = () => { try { const diff = Math.max(0, target - new Date()); const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3); countdownEl.innerHTML = `<div class="text-center"><div class="countdown-num">${d}</div><div class="countdown-label">দিন</div></div><div class="text-center"><div class="countdown-num">${String(h).padStart(2,'0')}</div><div class="countdown-label">ঘণ্টা</div></div><div class="text-center"><div class="countdown-num">${String(m).padStart(2,'0')}</div><div class="countdown-label">মিনিট</div></div><div class="text-center"><div class="countdown-num">${String(s).padStart(2,'0')}</div><div class="countdown-label">সেকেন্ড</div></div>`; } catch(e){ console.error("Countdown tick error:", e); clearInterval(countdownInterval)} }; try { tick(); countdownInterval = setInterval(tick, 1000); } catch(e){ console.error("Countdown setup error:", e) } }
+        
+        function setupThemeToggle() { 
+            const btn = document.getElementById('theme-toggle-btn'); 
+            const meta = document.getElementById('theme-color-meta'); 
+            if (!btn || !meta) return; 
+            const applyTheme = (theme) => { 
+                document.documentElement.setAttribute('data-theme', theme); 
+                btn.textContent = theme === 'dark' ? '☀️' : '🌙'; 
+                meta.content = theme === 'dark' ? '#1c1c1c' : '#f8f7f2'; 
+            }; 
+            btn.addEventListener('click', () => { 
+                const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; 
+                updateSetting('theme', newTheme); // No DB save, just local state
+                applyTheme(newTheme); 
+            }); 
+            applyTheme(state.settings.theme); 
+        }
+        
+        function setupViewToggle() { 
+            const btn = document.getElementById('view-toggle-btn'); 
+            const viewportMeta = document.querySelector('meta[name="viewport"]'); 
+            if (!btn || !viewportMeta) return; 
+            const applyView = (mode) => { 
+                if (mode === 'desktop') { 
+                    document.body.classList.add('desktop-view'); 
+                    viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); 
+                    btn.textContent = "Mobile View"; 
+                } else { 
+                    document.body.classList.remove('desktop-view'); 
+                    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); 
+                    btn.textContent = "Desktop View"; 
+                } 
+            }; 
+            btn.addEventListener('click', () => { 
+                const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; 
+                updateSetting('viewMode', newMode); // No DB save, just local state
+                applyView(newMode); 
+            }); 
+            applyView(state.settings.viewMode); 
+        }
+        
+        // Export/Import/Print functions are removed.
 
-        // --- Render & Initialization ---
         function renderAll() { 
             try { 
                 renderSubjectSelector(); 
                 renderProgressCards(); 
-                // renderSyllabusContent() call REMOVED
-                renderAnalytics(); 
-            } catch (e) { console.error("RenderAll failed:", e); const container = document.getElementById('app-container'); if (container) container.innerHTML = '<div class="text-red-500 p-4">Error rendering dashboard. Check console.</div>'; }
+                renderSyllabusContent(); 
+                renderStudyStreak(); 
+                renderGoalsCard(); 
+                // updateSyncQueueCount() removed
+            } 
+            catch (e) { 
+                console.error("RenderAll failed:", e); 
+                const container = document.getElementById('app-container'); 
+                if (container) container.innerHTML = `<div class="text-red-500 p-4"><b>ত্রুটি:</b> ড্যাশবোর্ড লোড করা যায়নি। বিস্তারিত জানতে কনসোল দেখুন।</div>`; 
+            } 
         }
         
         async function startApp() {
-            const syncStatusEl = document.getElementById('connection-status');
-            const loadingIndicator = document.getElementById('loading-indicator');
+            // Modal variables are removed
+            const syncStatusEl = document.getElementById('connection-status'); 
+            const loadingIndicator = document.getElementById('loading-indicator'); 
             const mainContentGrid = document.getElementById('main-content-grid');
-
-            syncStatusEl.textContent = 'Initializing...';
-            setupViewToggle();
+            if (!syncStatusEl || !loadingIndicator || !mainContentGrid) { 
+                if(loadingIndicator) loadingIndicator.innerHTML = '<div class="text-red-500 p-4"><b>Initialization Error:</b> Critical elements missing.</div>'; 
+                return; 
+            }
+            syncStatusEl.title = 'Initializing...'; 
+            syncStatusEl.className = 'w-3 h-3 rounded-full status-idle';
             
-            try { 
-                renderAll(); 
-                if(loadingIndicator) loadingIndicator.style.display = 'none'; 
-                if(mainContentGrid) mainContentGrid.style.display = 'grid'; 
-                state.isInitialized = true; 
-            } catch (e) { console.error("Initial render failed:", e); if(loadingIndicator) loadingIndicator.textContent = 'Error during initial render. Check console.'; }
-
-            if(db && userDocRef) {
-                syncStatusEl.textContent = 'Connecting...';
-                try { 
-                    onSnapshot(userDocRef, (snap) => {
-                        let requiresUpdate = false;
-                        if (snap.exists()) {
-                            const firestoreData = snap.data();
-                            if (JSON.stringify(state.userData) !== JSON.stringify(firestoreData)) {
-                                state.userData = firestoreData;
-                                requiresUpdate = true;
-                            }
-                        }
-                        
-                        if (requiresUpdate && state.isInitialized) {
-                            showToast('🔄 Live data updated!', 'success');
-                            rerenderProgressBarsOnly();
-                        }
-                        
-                        syncStatusEl.textContent = 'Live (View-Only)';
-                        syncStatusEl.className = 'status-indicator online';
-
-                    }, (error) => { 
-                        console.error("Firestore onSnapshot error:", error); 
-                        syncStatusEl.textContent = 'Connection Failed'; 
-                        syncStatusEl.className = 'status-indicator offline'; 
-                    }); 
-                } catch(e) { 
-                    console.error("onSnapshot setup failed:", e); 
-                    syncStatusEl.textContent = 'Firebase Error'; 
-                    syncStatusEl.className = 'status-indicator offline';
+            // Migration logic (remains important for reading old data structures)
+            const runDataMigration = (data) => {
+                if (!data || data.dataVersion >= CURRENT_DATA_VERSION) {
+                    return { ...data, needsUpdate: false };
                 }
-            } else { 
-                syncStatusEl.textContent = 'Firebase Failed'; 
-                syncStatusEl.className = 'status-indicator offline'; 
+                console.log(`Running migration from version ${data.dataVersion || 'pre-18.3'} to ${CURRENT_DATA_VERSION}`);
+                if (data.goals) {
+                    if (!Array.isArray(data.goals)) {
+                        const allGoals = [...(data.goals?.today || []), ...(data.goals?.weekly || [])];
+                        data.goals = Array.from(new Map(allGoals.map(item => [item.id, item])).values());
+                    }
+                    data.goals.forEach(goal => {
+                        if (goal.completed !== undefined) {
+                            goal.status = goal.completed ? 5 : 0;
+                            if (goal.completed) goal.completedAt = goal.completedAt || goal.createdAt || new Date().toISOString();
+                            delete goal.completed;
+                        }
+                        if (goal.status === undefined) goal.status = 0;
+                    });
+                } else {
+                    data.goals = [];
+                }
+                data.dataVersion = CURRENT_DATA_VERSION;
+                return { ...data, needsUpdate: true };
+            };
+
+            // IndexedDB logic is removed. We use defaults and wait for Firebase.
+            try {
+                updateSoundVolume(state.settings.soundVolume);
+                // No settings loaded from DB, just use defaults.
+            } catch (e) {
+                console.error("Settings init failed:", e);
+            }
+            
+            // Initial render (will be empty, but sets up the structure)
+            try {
+                renderAll();
+                loadingIndicator.style.display = 'none';
+                mainContentGrid.style.display = 'grid';
+                state.isInitialized = true;
+            } catch (e) {
+                console.error("Initial render from cache failed:", e);
+                loadingIndicator.innerHTML = '<div class="text-red-500 p-4"><b>Render Error:</b> Could not display dashboard. Check console.</div>';
             }
 
+            // Firebase connection is the MOST important part
+            if(db && userDocRef) {
+                syncStatusEl.title = 'Connecting...';
+                try {
+                    onSnapshot(userDocRef, async (snap) => {
+                        if (snap.exists()) {
+                            const firestoreData = snap.data();
+                            const { needsUpdate, ...migratedData } = runDataMigration(firestoreData);
+
+                            state.userData = migratedData; // Load data from Firebase
+                            
+                            if (state.isInitialized) {
+                                renderAll(); // Re-render page with the new data
+                                showToast('🔄 অগ্রগতি সিঙ্ক হয়েছে!', 'success');
+                            }
+                            syncStatusEl.title = `Synced: ${new Date().toLocaleTimeString()}`; 
+                            syncStatusEl.className = 'w-3 h-3 rounded-full status-online';
+                        } else { 
+                            console.warn("User document doesn't exist in Firestore."); 
+                            syncStatusEl.title = 'No Data'; 
+                            syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
+                        }
+                    }, (error) => {
+                        console.error("Firestore onSnapshot error:", error);
+                        syncStatusEl.title = 'Sync Failed'; 
+                        syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
+                    });
+                } catch(e) { 
+                    console.error("onSnapshot setup failed:", e); 
+                    syncStatusEl.title = 'Firebase Error'; 
+                    syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
+                }
+            } else { 
+                syncStatusEl.title = 'Firebase Failed'; 
+                syncStatusEl.className = 'w-3 h-3 rounded-full status-error'; 
+            }
+            
             if (state.isInitialized) {
-                setupEventHandlers();
+                setupEventHandlers(); // Sets up info buttons
+                // setupModalEventHandlers() is removed
                 setupInfoButtons();
                 startCountdown();
+                setupViewToggle();
                 setupThemeToggle();
+                const banner = document.getElementById('offline-banner');
+                window.addEventListener('online', () => { 
+                    if (banner) banner.style.display = 'none'; 
+                    syncStatusEl.title = 'Online'; 
+                    syncStatusEl.className = 'w-3 h-3 rounded-full status-online';
+                });
+                window.addEventListener('offline', () => { 
+                    if (banner) banner.style.display = 'block'; 
+                    if (syncStatusEl) { 
+                        syncStatusEl.title = 'Offline'; 
+                        syncStatusEl.className = 'w-3 h-3 rounded-full status-offline'; 
+                    } 
+                });
+                if (!navigator.onLine && banner) banner.style.display = 'block';
                 window.addEventListener('beforeunload', () => clearInterval(countdownInterval));
             }
         }
         startApp();
     </script>
 </body>
-</html>
+            </html>
