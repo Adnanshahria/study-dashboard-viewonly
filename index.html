@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="google" content="notranslate" />
     <meta name="theme-color" id="theme-color-meta" content="#1c1c1c" />
-    <title>AS Study Dashboard (Viewer)</title> 
+    <title>AS Study Dashboard v18.5 (ReLogic)</title> 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -34,24 +34,61 @@
         .pb-gradient-cyan { background: linear-gradient(90deg, #67e8f9, #22d3ee); }
         .pb-gradient-rose { background: linear-gradient(90deg, #fb7185, #f43f5e); }
         
-        #countdown-card { background: linear-gradient(135deg, #d90429, #ef233c); box-shadow: 0 10px 25px rgba(217, 4, 41, 0.25); }
-        .countdown-num { font-weight:800; font-size:24px; } .countdown-label { font-size:12px; opacity:0.95; }
+        /* --- Modern Countdown Styles --- */
+        #countdown-card {
+            background: linear-gradient(135deg, #2d3748, #1a202c); /* Dark, sleek gradient */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            border: 1px solid #4a5563; /* Subtle border */
+        }
+        /* Make the header text white to contrast the new dark bg */
+        #countdown-card h2 {
+            color: #ffffff;
+            opacity: 0.95;
+            border-bottom: 1px solid #4a5563; /* Add a subtle separator line */
+            padding-bottom: 0.75rem; /* 12px */
+            margin-bottom: 1.25rem; /* 20px */
+        }
+        
+        /* New styles for the countdown blocks */
+        .countdown-block {
+            text-align: center;
+        }
+        .countdown-num { 
+            font-weight: 700; /* Slightly less heavy */
+            font-size: 28px; /* Bigger */
+            color: #ffffff; 
+            line-height: 1.1;
+        }
+        .countdown-label { 
+            font-size: 11px; 
+            color: #9ca3af; /* Muted label color */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+        
+       /* Responsive adjustments */ body:not(.desktop-view) .countdown-num { font-size: 24px; } body:not(.desktop-view) .countdown-label { font-size: 10px; } body:not(.desktop-view) #countdown-card { padding: 16px; } body:not(.desktop-view) #countdown-card h2 { margin-bottom: 1rem; } 
         .subject-progress-svg circle { transition: stroke-dashoffset 0.4s ease-out; }
         .subject-progress-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 8px; border-radius: 12px; border: 2px solid transparent; transition: background 0.2s, border-color 0.2s; }
         .subject-progress-btn.active { border-color: var(--text-primary); background: var(--bg-main); box-shadow: 0 0 0 2px var(--text-primary); }
-        
-        /* View-Only Status Styles */
-        .status-display-box { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
-        .status-display-box.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
-        .status-display-box.done { background: #22c55e; border-color: #15803d; color: #fff !important; }
-        .status-display-box.pending { border: 2px solid var(--border-secondary); color: var(--text-primary); }
-
+        .task-status-btn { --fill: 0%; position: relative; display:inline-flex; align-items:center; justify-content:center; width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-secondary); background: transparent; cursor: pointer; overflow: hidden; z-index: 1; transition: transform .08s ease; color: var(--text-secondary); font-size: 10px; font-weight: 600; }
+        .task-status-btn::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--fill, 0%); background: linear-gradient(90deg, #7dd3fc, #38bdf8); z-index: -1; transition: width .2s ease-out; }
+        .task-status-btn:hover { transform: translateY(-2px); }
+        .task-status-btn.wont { background: #ef4444; border-color: #991b1b; color: #fff !important; }
+        .task-status-btn.done > span > svg { stroke: black; }
+        html[data-theme='dark'] .task-status-btn.done > span > svg { stroke: black; }
+        .note-btn { background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border-primary); border-radius: 6px; padding: 4px; cursor: pointer; transition: all 0.2s; opacity: 0.8; line-height: 1; }
+        .note-btn:hover { opacity: 1; transform: scale(1.05); border-color: var(--text-muted); color: var(--text-primary); }
+        .note-btn.has-note { opacity: 1; background: var(--text-primary); color: var(--bg-card); border-color: var(--text-primary); }
+        html[data-theme="dark"] .note-btn.has-note { background: var(--text-primary); color: var(--bg-main); }
         .info-btn { font-family: sans-serif; font-weight: bold; font-size: 14px; cursor: pointer; color: var(--text-muted); border: 1px solid var(--border-primary); border-radius: 50%; width: 22px; height: 22px; display: inline-flex; justify-content: center; align-items: center; transition: all 0.2s; } .info-btn:hover { background: var(--bg-main); transform: scale(1.1); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; padding: 1rem; }
         .modal-overlay.visible { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--bg-card); padding: 24px; border-radius: 12px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s; max-height: 80vh; overflow-y: auto; }
         .modal-overlay.visible .modal-content { transform: scale(1); }
         #info-modal-content ul { list-style-type: disc; padding-left: 20px; }
+        #note-textarea { width: 100%; height: 150px; background: var(--bg-main); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 8px; padding: 10px; margin-bottom: 15px; }
+        #sync-queue-list li { font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--border-secondary); }
         
         body.desktop-view { min-width: 1280px; }
         body:not(.desktop-view) .main-grid { grid-template-columns: 1fr; }
@@ -72,34 +109,6 @@
         body.desktop-view #selected-subject-qb-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         #syllabus-content table td, #syllabus-content table th { white-space: nowrap; }
         
-        .goal-tab { padding: 8px 16px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; color: var(--text-muted); font-weight: 500;}
-        .goal-tab.active { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 700; }
-        .goal-list-item { display: flex; align-items: center; gap: 12px; padding: 8px 4px; border-bottom: 1px solid var(--border-secondary); }
-        .goal-list-item:last-child { border-bottom: none; }
-        
-        .goal-tick-icon {
-            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
-            border: 2px solid var(--border-primary);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 11px; font-weight: 700;
-        }
-        .goal-list-item.completed .goal-tick-icon {
-            background-color: #22c55e; border-color: #15803d; color: #fff;
-        }
-        .goal-tick-icon.wont {
-            background: #ef4444; border-color: #991b1b; color: #fff;
-        }
-        .goal-list-item.completed .goal-title {
-            text-decoration: line-through; color: var(--text-muted);
-        }
-        #goal-list-container {
-            max-height: 308px;
-            overflow-y: auto;
-            padding-right: 4px; 
-        }
-        .goal-title, .goal-time { flex-grow: 1; font-weight: 500; }
-        .goal-time { flex-grow: 0; flex-shrink: 0; color: var(--text-muted); font-size: 11px; font-weight: 600; }
-        
         #settings-panel { 
             background: var(--bg-card);
             transition: opacity 0.2s, transform 0.2s; 
@@ -115,6 +124,10 @@
         .settings-item-control { flex-shrink: 0; }
         .settings-item-control button { font-size: 12px; padding: 4px 10px; border: 1px solid var(--border-primary); border-radius: 6px; background-color: var(--bg-main); transition: background-color 0.2s; }
         .settings-item-control button:hover { background-color: var(--border-secondary); }
+        .settings-item-control button.active {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 1px var(--text-primary);
+        }
         
         #syllabus-content th:first-child,
         #syllabus-content td:first-child {
@@ -132,17 +145,24 @@
         .status-error { background-color: #f97316; }
         .status-idle { background-color: #6b7280; }
         
-        #goal-tab-content { min-height: 240px; }
+        @media print {
+            body * { visibility: hidden; }
+            #print-container, #print-container * { visibility: visible; }
+            #print-container { position: absolute; left: 0; top: 0; width: 100%; padding: 1rem; }
+            .print-card { background: #ffffff !important; color: #000000 !important; border: 1px solid #ccc !important; border-radius: 8px; padding: 16px; margin-bottom: 16px; page-break-inside: avoid; }
+            .print-card h2, .print-card h3 { color: #000 !important; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+            .print-progress-item { font-size: 14px; }
+        }
     </style>
 </head>
 <body class="text-sm">
     <div id="offline-banner" style="display:none;" class="bg-red-600 text-white p-2 text-center fixed top-0 w-full z-50">
-        ⚠️ আপনি অফলাইন মোডে আছেন।
+        ⚠️ আপনি অফলাইন মোডে আছেন। সংযোগ ফিরে আসলে পরিবর্তনগুলো সিঙ্ক করা হবে।
     </div>
 
     <header id="header" class="sticky top-0 z-30 w-full bg-header border-b border-primary backdrop-blur-sm">
         <div class="w-full max-w-screen-xl mx-auto flex justify-between items-center py-2 px-4">
-            <h1 class="text-xl font-bold">AS Study Dashboard (Viewer)</h1>
+            <h1 class="text-xl font-bold">AS Study Dashboard</h1>
             <div class="flex items-center gap-3">
                 <div id="connection-status" class="w-3 h-3 rounded-full status-idle" title="Connecting..."></div>
                 <button id="settings-btn" class="p-1 rounded-full hover:bg-border-secondary" title="Settings">
@@ -174,6 +194,38 @@
             </div>
             <div class="settings-item-control"><button id="view-toggle-btn">Toggle View</button></div>
         </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                <div><span class="font-semibold">Sync Queue</span><p class="text-xs text-muted">View pending changes</p></div>
+            </div>
+            <div class="settings-item-control"><button id="sync-queue-btn" class="relative">Queue <span id="sync-queue-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center" style="display: none;">0</span></button></div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div><span class="font-semibold">Last Synced</span><p class="text-xs text-muted">Last successful sync time</p></div>
+            </div>
+            <span id="last-synced-time" class="text-xs font-semibold text-muted">...</span>
+        </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z" /></svg>
+                <div><span class="font-semibold">Print Report</span><p class="text-xs text-muted">Generate a printable summary</p></div>
+            </div>
+            <div class="settings-item-control"><button id="print-report-btn">Print</button></div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-item-info">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                <div><span class="font-semibold">Data Backup</span><p class="text-xs text-muted">Export or import your data</p></div>
+            </div>
+            <div class="settings-item-control flex gap-2">
+                <button id="export-json-btn">JSON</button>
+                <button id="export-csv-btn">CSV</button>
+                <button id="import-data-btn">Import</button>
+            </div>
+        </div>
     </div>
     
     <main id="app-container" class="container max-w-screen-xl mx-auto py-4 px-4">
@@ -186,7 +238,7 @@
                 <section id="syllabus-shell" class="card"><h2 class="text-base font-bold mb-3">সিলেবাস বিস্তারিত</h2><div id="syllabus-content">Loading...</div></section>
             </div>
             <div class="right-column col-span-1 grid auto-rows-min gap-5">
-                <div id="countdown-card" class="card text-white p-5">
+                <div id="countdown-card" class="card p-5">
                     <h2 class="text-lg font-bold mb-4 text-center flex justify-between items-center"><span>Final Countdown</span><span id="countdown-info-btn"></span></h2>
                     <div id="countdown" class="flex justify-around">Loading...</div>
                 </div>
@@ -196,69 +248,55 @@
                     <div id="streak-container" class="mb-4"></div>
                     <div id="global-summary-container" class="flex flex-col gap-3">Loading Summaries...</div>
                 </div>
-                <div id="goal-tracker-card" class="card"></div>
             </div>
         </div>
         <div id="loading-indicator" class="text-center py-10">Initializing Dashboard...</div>
     </main>
 
+    <div id="print-container"></div>
+    <input type="file" id="import-file-input" class="hidden" accept=".json">
+
     <div id="info-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true"><div id="info-modal-content" class="modal-content"><h3 id="info-modal-title" class="font-bold text-lg mb-2"></h3><p id="info-modal-desc" class="text-muted mb-3 text-sm"></p><div class="mb-2 font-semibold text-sm">গণনাকৃত আইটেম:</div><ul id="info-modal-items" class="text-sm"></ul><button id="info-modal-close" class="mt-4 px-4 py-2 bg-rose-600 text-white rounded-lg w-full">বন্ধ করুন</button></div></div>
+    <div id="note-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true"><div id="note-modal-content" class="modal-content"><h3 id="note-modal-title" class="font-bold text-lg mb-3">নোট সম্পাদনা করুন</h3><textarea id="note-textarea"></textarea><div class="flex justify-between gap-2 mt-4"><button id="note-modal-undo" class="px-3 py-2 text-sm bg-gray-300 text-black rounded-lg">পূর্বাবস্থায় ফেরান</button><button id="note-modal-clear" class="px-3 py-2 text-sm bg-yellow-500 text-black rounded-lg">মুছুন</button><div class="flex-grow"></div><button id="note-modal-cancel" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg">বাতিল</button><button id="note-modal-save" class="px-4 py-2 text-sm bg-green-600 text-white rounded-lg">সংরক্ষণ</button></div></div></div>
+    <div id="sync-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true"><div id="sync-modal-content" class="modal-content"><h3 class="font-bold text-lg mb-3">অমীমাংসিত সিঙ্ক (<span id="sync-modal-count">0</span>)</h3><ul id="sync-queue-list" class="mb-4 max-h-60 overflow-y-auto"><li>কোনো অমীমাংসিত পরিবর্তন নেই।</li></ul><div class="flex justify-between gap-2 mt-4"><button id="sync-modal-clear" class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg">স্থানীয় পরিবর্তন মুছুন</button><button id="sync-modal-now" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg">এখন সিঙ্ক করুন</button><button id="sync-modal-close" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg">বন্ধ করুন</button></div></div></div>
+    
+    <div id="import-confirm-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true">
+        <div id="import-confirm-modal-content" class="modal-content">
+            <h3 class="font-bold text-lg mb-3">Confirm Data Import</h3>
+            <p class="text-sm text-muted mb-4">Are you sure you want to import this file? This will <strong class="text-red-500">overwrite all your current data</strong> and cannot be undone.</p>
+            <div class="flex justify-end gap-3 mt-4">
+                <button id="import-confirm-cancel" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg">Cancel</button>
+                <button id="import-confirm-proceed" class="px-4 py-2 text-sm bg-red-600 text-white rounded-lg">Overwrite and Import</button>
+            </div>
+        </div>
+    </div>
 
     <div id="toast-container" class="fixed z-50 space-y-2"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         
-        // This page is VIEW-ONLY. It only READS data from Firebase.
-        
-        const CURRENT_DATA_VERSION = 18.3; // Data structure version (for migration logic)
-        const FIRESTORE_USER_ID = 'as19'; // MUST be the same as the main dashboard
+        const CURRENT_DATA_VERSION = 18.3; // Data structure version (migration)
+        const FIRESTORE_USER_ID = 'as19';
         const firebaseConfig = {"apiKey":"AIzaSyDTLhIkrW9qk6KPT_gTDibIiJeVwWYTowk","authDomain":"my-study-dashboard.firebaseapp.com","projectId":"my-study-dashboard","storageBucket":"my-study-dashboard.appspot.com","messagingSenderId":"66307909031","appId":"1:66307909031:web:9e724a43c8c11a0ef80282"};
-        
         let app, db, userDocRef;
-        try { 
-            app = initializeApp(firebaseConfig); 
-            db = getFirestore(app); 
-            userDocRef = doc(db, "users", FIRESTORE_USER_ID); 
-        } catch (e) { 
-            console.error("Firebase initialization failed:", e); 
-        }
+        try { app = initializeApp(firebaseConfig); db = getFirestore(app); userDocRef = doc(db, "users", FIRESTORE_USER_ID); } catch (e) { console.error("Firebase initialization failed:", e); }
         
-        // IndexedDB logic is removed, as this viewer page doesn't save any data locally.
+        const DB_NAME = 'AdnanStudyDashboardDB_v1'; const DB_VERSION = 1; let idb;
+        function openDB() { return new Promise((resolve, reject) => { try { const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = (e) => reject("Error opening DB: " + e.target.errorCode); request.onsuccess = (e) => { idb = e.target.result; resolve(idb); }; request.onupgradeneeded = (e) => { const db = e.target.result; if (!db.objectStoreNames.contains('userData')) db.createObjectStore('userData', { keyPath: 'id' }); if (!db.objectStoreNames.contains('pendingWrites')) db.createObjectStore('pendingWrites', { keyPath: 'key' }); }; } catch(e) { reject(e); } }); }
+        async function getFromDB(storeName, key) { if (!idb) return null; return new Promise((resolve) => { try { const tx = idb.transaction(storeName, 'readonly'); const store = tx.objectStore(storeName); const req = store.get(key); req.onsuccess = () => resolve(req.result); tx.onerror = () => resolve(null); } catch (e) { console.error(`IndexedDB get error (${storeName}, ${key}):`, e); resolve(null); } }); }
+        async function getAllFromDB(storeName) { if (!idb) return []; return new Promise((resolve) => { try { const tx = idb.transaction(storeName, 'readonly'); const store = tx.objectStore(storeName); const req = store.getAll(); req.onsuccess = () => resolve(req.result); tx.onerror = () => resolve([]); } catch(e) { console.error(`IndexedDB getAll error (${storeName}):`, e); resolve([]); } }); }
+        async function writeToDB(storeName, data) { if (!idb) return; return new Promise((resolve, reject) => { try { const tx = idb.transaction(storeName, 'readwrite'); tx.oncomplete = () => resolve(); tx.onerror = (e) => { if (e.target.error?.name === 'QuotaExceededError') { reject(new Error('QuotaExceededError')); } else { reject(tx.error); } }; const store = tx.objectStore(storeName); store.put(data); } catch (e) { reject(e); } }); }
+        async function clearDBStore(storeName) { if (!idb) return; return new Promise((resolve, reject) => { try { const tx = idb.transaction(storeName, 'readwrite'); tx.oncomplete = () => resolve(); tx.onerror = (e) => reject(tx.error); const store = tx.objectStore(storeName); store.clear(); } catch(e) { reject(e); } }); }
         
-        const state = { 
-            userData: {}, 
-            activeSubject: 'biology', 
-            syllabusOpenState: {}, 
-            isInitialized: false, 
-            lastCompositeProgress: 0, 
-            activeGoalTab: 'today', 
-            historyViewState: { mode: 'last7days', selectedDate: null }, 
-            currentWeeklyViewDate: new Date().toISOString(), 
-            settings: { 
-                theme: 'dark', // Default theme
-                viewMode: 'mobile', // Default view
-                soundVolume: 0.3, // Default volume
-                weekStartDay: 'sunday' // Default
-            } 
-        };
-        
+        const state = { userData: {}, activeSubject: 'biology', syllabusOpenState: {}, isInitialized: false, lastCompositeProgress: 0, settings: { theme: 'dark', viewMode: 'mobile', soundVolume: 0.3 } };
+        let pendingImportData = null;
         let audioCtx; let masterGain;
         function initAudio() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); masterGain = audioCtx.createGain(); masterGain.connect(audioCtx.destination); updateSoundVolume(state.settings.soundVolume); } catch (e) { console.error("Web Audio API not supported", e); } } }
-        
-        function updateSoundVolume(volume) { 
-            state.settings.soundVolume = parseFloat(volume); // Update local state only
-            if (masterGain) { 
-                masterGain.gain.setValueAtTime(state.settings.soundVolume, audioCtx.currentTime); 
-            } 
-            const slider = document.getElementById('sound-volume-slider'); 
-            if (slider) slider.value = state.settings.soundVolume; 
-        }
-        
+        function updateSoundVolume(volume) { state.settings.soundVolume = parseFloat(volume); if (masterGain) { masterGain.gain.setValueAtTime(state.settings.soundVolume, audioCtx.currentTime); } const slider = document.getElementById('sound-volume-slider'); if (slider) slider.value = state.settings.soundVolume; }
         function playTickSound() { if (!audioCtx || state.settings.soundVolume <= 0) return; if (audioCtx.state === 'suspended') { audioCtx.resume(); } try { const oscillator = audioCtx.createOscillator(); oscillator.type = 'triangle'; oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime); const soundGain = audioCtx.createGain(); soundGain.gain.setValueAtTime(1, audioCtx.currentTime); soundGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03); oscillator.connect(soundGain).connect(masterGain); oscillator.start(audioCtx.currentTime); oscillator.stop(audioCtx.currentTime + 0.03); } catch(e) { console.error("Error playing tick sound:", e); } }
         
-        // Syllabus, items, and progress calculation logic remains the same
         const syllabusData = { biology: { name: "জীববিজ্ঞান", chapters: [ { id: 1, name: "কোষ ও এর গঠন", paper: 1 }, { id: 2, name: "কোষ বিভাজন", paper: 1 }, { id: 3, name: "কোষ রসায়ন", paper: 1 }, { id: 4, name: "অণুজীব", paper: 1 }, { id: 5, name: "শৈবাল ও ছত্রাক", paper: 1 }, { id: 6, name: "ব্রায়োফাইটা ও টেরিডোফাইটা", paper: 1 }, { id: 7, name: "নগ্নবীজি ও আবৃতবীজি উদ্ভিদ", paper: 1 }, { id: 8, name: "টিস্যু ও টিস্যুতন্ত্র", paper: 1 }, { id: 9, name: "উদ্ভিদ শরীরতত্ত্ব", paper: 1 }, { id: 10, name: "উদ্ভিদ প্রজনন", paper: 1 }, { id: 11, name: "জীব প্রযুক্তি", paper: 1 }, { id: 12, name: "জীবের পরিবেশ, বিস্তার ও সংরক্ষণ", paper: 1 }, { id: 13, name: "প্রাণির বৈচিত্র্য ও শ্রেণিবিন্যাস", paper: 2 }, { id: 14, name: "প্রাণির পরিচিতি (হাইড্রা)", paper: 2 }, { id: 15, name: "প্রাণির পরিচিতি (ঘাসফড়িং)", paper: 2 }, { id: 16, name: "প্রাণির পরিচিতি (রুই মাছ)", paper: 2 }, { id: 17, name: "মানব শরীরতত্ত্ব: পরিপাক ও শোষণ", paper: 2 }, { id: 18, name: "মানব শরীরতত্ত্ব: রক্ত ও সঞ্চালন", paper: 2 }, { id: 19, name: "মানব শরীরতত্ত্ব: শ্বাসক্রিয়া ও শ্বসন", paper: 2 }, { id: 20, name: "মানব শরীরতত্ত্ব: বর্জ্য ও নিষ্কাশন", paper: 2 }, { id: 21, name: "মানব শরীরতত্ত্ব: চলন ও অঙ্গচালনা", paper: 2 }, { id: 22, name: "মানব শরীরতত্ত্ব: সমন্বয় ও নিয়ন্ত্রণ", paper: 2 }, { id: 23, name: "মানব জীবনের ধারাবাহিকতা", paper: 2 }, { id: 24, name: "মানবদেহের প্রতিরক্ষা", paper: 2 }, { id: 25, name: "জিনতত্ত্ব ও বিবর্তন", paper: 2 }, { id: 26, name: "প্রাণির আচরণ", paper: 2 } ] }, chemistry: { name: "রসায়ন", chapters: [ { id: 1, name: "ল্যাবরেটরির নিরাপদ ব্যবহার", paper: 1 }, { id: 2, name: "গুণগত রসায়ন", paper: 1 }, { id: 3, name: "মৌলের পর্যায়বৃত্ত ধর্ম ও রাসায়নিক বন্ধন", paper: 1 }, { id: 4, name: "রাসায়নিক পরিবর্তন", paper: 1 }, { id: 5, name: "কর্মমূখী রসায়ন", paper: 1 }, { id: 6, name: "পরিবেশ রসায়ন", paper: 2 }, { id: 7, name: "জৈব রসায়ন", paper: 2 }, { id: 8, name: "পরিমাণগত রসায়ন", paper: 2 }, { id: 9, name: "তড়িৎ রসায়ন", paper: 2 }, { id: 10, name: "অর্থনৈতিক রসায়ন", paper: 2 } ] }, physics: { name: "পদার্থবিজ্ঞান", chapters: [ { id: 1, name: "ভৌত জগত ও পরিমাপ", paper: 1 }, { id: 2, name: "ভেক্টর", paper: 1 }, { id: 3, name: "গতিবিদ্যা", paper: 1 }, { id: 4, name: "নিউটনিয়ান বলবিদ্যা", paper: 1 }, { id: 5, name: "কাজ, শক্তি ও ক্ষমতা", paper: 1 }, { id: 6, name: "মহাকর্ষ ও অভিকর্ষ", paper: 1 }, { id: 7, name: "পদার্থের গাঠনিক ধর্ম", paper: 1 }, { id: 8, name: "পর্যাবৃত্তিক গতি", paper: 1 }, { id: 9, name: "তরঙ্গ", paper: 1 }, { id: 10, name: "আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব", paper: 1 }, { id: 11, name: "তাপগতিবিদ্যা", paper: 2 }, { id: 12, name: "স্থির তড়িৎ", paper: 2 }, { id: 13, name: "চল তড়িৎ", paper: 2 }, { id: 14, name: "তড়িৎ প্রবাহের চৌম্বক ক্রিয়া ও চুম্বকত্ব", paper: 2 }, { id: 15, name: "তড়িৎ চৌম্বক আবেশ ও পরিবর্তী প্রবাহ", paper: 2 }, { id: 16, name: "জ্যামিতিক আলোকবিজ্ঞান", paper: 2 }, { id: 17, name: "ভৌত আলোকবিজ্ঞা", paper: 2 }, { id: 18, name: "আধুনিক পদার্থবিজ্ঞানের সূচনা", paper: 2 }, { id: 19, name: "পরমাণুর মডেল এবং নিউক্লিয়ার পদার্থবিজ্ঞান", paper: 2 }, { id: 20, name: "সেমিকন্ডাক্টর ও ইলেকট্রনিকস", paper: 2 }, { id: 21, name: "জ্যোতির্বিজ্ঞান", paper: 2 } ] } };
         const trackableItems = ["মূল বই", "Class", "Rev Class", "Meditrics", "MQB (Unmesh)", "Retina QB", "Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam", "রিভিশন ১", "রিভিশন ২"];
         const mainStudyItems = ["মূল বই", "Class", "Meditrics"]; const revisionItems = ["রিভিশন ১", "রিভিশন ২", "Rev Class"]; const examItems = ["Secret Files Exam", "Daily Exam", "Weekly Exam", "Campus Exam"]; const qbItems = ["MQB (Unmesh)", "Retina QB"];
@@ -267,7 +305,23 @@
         const getRawPercentForStatus = (status) => (status >= 0 && status <= 5) ? status * 20 : 0;
         const normalizeRawTo100 = (raw) => raw <= 0 ? 0 : Math.min(100, (raw / 80) * 100);
         function calculateProgress(subjectKey, itemsToCount) { let currentItems = [...itemsToCount]; if (subjectKey === 'physics') currentItems = currentItems.filter(item => item !== 'মূল বই'); const subjectData = syllabusData[subjectKey]; if (!subjectData || !subjectData.chapters) return { overall: 0, paper1: 0, paper2: 0 }; const mulBoiIndex = trackableItems.indexOf("মূল বই"); const meditricsIndex = trackableItems.indexOf("Meditrics"); const useMaxLogic = currentItems.includes("মূল বই") && currentItems.includes("Meditrics"); let itemIndices = currentItems.map(item => trackableItems.indexOf(item)).filter(i => i >= 0); let p1Sum = 0, p1Count = 0, p2Sum = 0, p2Count = 0; subjectData.chapters.forEach(ch => { let rawSum = 0; let itemsForAvg = itemIndices.length; if (useMaxLogic) { const nonSpecial = itemIndices.filter(i => i !== mulBoiIndex && i !== meditricsIndex); nonSpecial.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); const mulBoiStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${mulBoiIndex}`] ?? 0); const medStatus = getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${meditricsIndex}`] ?? 0); rawSum += Math.max(mulBoiStatus, medStatus); itemsForAvg = nonSpecial.length + 1; } else { itemIndices.forEach(i => { rawSum += getRawPercentForStatus(state.userData?.[`s_${subjectKey}_${ch.id}_${i}`] ?? 0); }); } const normalized = normalizeRawTo100(itemsForAvg > 0 ? rawSum / itemsForAvg : 0); if (ch.paper === 1) { p1Sum += normalized; p1Count++; } else { p2Sum += normalized; p2Count++; } }); const paper1 = p1Count > 0 ? p1Sum / p1Count : 0; const paper2 = p2Count > 0 ? p2Sum / p2Count : 0; const overall = (p1Count + p2Count > 0) ? (p1Sum + p2Sum) / (p1Count + p2Count) : 0; return { overall, paper1, paper2 }; }
-        const calculateComposite = () => { const subjects = Object.keys(syllabusData); if(!subjects.length) return { mainAvg: 0, revAvg: 0, examAvg: 0, qbAvg: 0, composite: 0 }; const mainAvg = calculateGlobalAverage(s => calculateProgress(s, mainStudyItems)).overall; const revAvg = calculateGlobalAverage(s => calculateProgress(s, revisionItems)).overall; const examAvg = calculateGlobalAverage(s => calculateProgress(s, examItems)).overall; const qbAvg = calculateGlobalAverage(s => calculateProgress(s, qbItems)).overall; return { mainAvg, revAvg, examAvg, qbAvg, composite: (mainAvg + revAvg + examAvg + qbAvg) / 4 }; };
+        
+        const calculateComposite = () => {
+            const subjects = Object.keys(syllabusData);
+            if(!subjects.length) return { mqbAvg: 0, rev1Avg: 0, classAvg: 0, revClassAvg: 0, composite: 0 };
+
+            // Calculate the global average for each specific item
+            const mqbAvg = calculateGlobalAverage(s => calculateProgress(s, ["MQB (Unmesh)"])).overall;
+            const rev1Avg = calculateGlobalAverage(s => calculateProgress(s, ["রিভিশন ১"])).overall;
+            const classAvg = calculateGlobalAverage(s => calculateProgress(s, ["Class"])).overall;
+            const revClassAvg = calculateGlobalAverage(s => calculateProgress(s, ["Rev Class"])).overall;
+
+            // Apply the new weighted logic
+            const composite = (mqbAvg * 0.60) + (rev1Avg * 0.20) + (classAvg * 0.10) + (revClassAvg * 0.10);
+
+            return { mqbAvg, rev1Avg, classAvg, revClassAvg, composite };
+        };
+        
         const calculateGlobalAverage = (fn) => { const subjects = Object.keys(syllabusData); let total = 0; subjects.forEach(key => { total += fn(key).overall; }); return { overall: total / (subjects.length || 1) }; };
         const calculateStudyStreak = () => { const timestamps = Object.keys(state.userData).filter(k => k.startsWith('timestamp_s_')).map(k => state.userData[k]).filter(Boolean); if (timestamps.length === 0) return 0; const uniqueDays = [...new Set(timestamps.map(d => { try { const dt = new Date(d); return dt.toISOString().slice(0,10); } catch(e) { return null; } }))].filter(Boolean).sort().reverse(); const todayISO = (new Date()).toISOString().slice(0,10); let streak = 0; let cursor = new Date(todayISO); let cursorISO = todayISO; let firstDayFound = uniqueDays.includes(todayISO); if(firstDayFound) { for (const day of uniqueDays) { if (day === cursorISO) { streak++; cursor.setUTCDate(cursor.getUTCDate() - 1); cursorISO = cursor.toISOString().slice(0,10); } else if (day < cursorISO) { break; } } } return streak; };
 
@@ -278,292 +332,20 @@
         const createCircularProgressBar = (p, color) => `<svg class="subject-progress-svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" stroke="var(--progress-track)" stroke-width="5" fill="none" /><circle cx="32" cy="32" r="28" stroke="${color}" stroke-width="5" fill="none" stroke-dasharray="${2 * Math.PI * 28}" stroke-dashoffset="${(1 - (p/100)) * 2 * Math.PI * 28}" stroke-linecap="round" /></svg>`;
 
         function renderSubjectSelector() { const container = document.getElementById('subject-selector'); if(!container) return; const fragment = document.createDocumentFragment(); const colors = ['#34d399', '#f97316', '#38bdf8']; Object.keys(syllabusData).forEach((key, idx) => { const btn = document.createElement('div'); const isActive = state.activeSubject === key; const progress = calculateProgress(key, mainStudyItems); btn.className = `subject-progress-btn ${isActive ? 'active' : ''}`; btn.dataset.subject = key; btn.innerHTML = `<div class="relative">${createCircularProgressBar(progress.overall, colors[idx % colors.length])}<div class="absolute inset-0 flex items-center justify-center font-bold text-primary">${progress.overall.toFixed(0)}%</div></div><span class="font-semibold text-sm">${syllabusData[key].name}</span>`; btn.onclick = () => { if (state.activeSubject !== key) { state.activeSubject = key; renderAll(); }}; fragment.appendChild(btn); }); container.innerHTML = ''; container.appendChild(fragment); }
-        function renderProgressCards() { const subject = state.activeSubject; const mainProgEl = document.getElementById('selected-subject-main-progress'); if(mainProgEl) mainProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, mainStudyItems), 'মূল বই ও লেকচার') + createBreakdownProgressBar(calculateProgress(subject, revisionItems), 'রিভিশন', ['rose', 'amber', 'lav']); const examProgEl = document.getElementById('selected-subject-exam-progress'); if(examProgEl) examProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, examItems), 'সকল পরীক্ষা', ['peach', 'cyan', 'mint']); const qbProgEl = document.getElementById('selected-subject-qb-progress'); if(qbProgEl) qbProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, ["MQB (Unmesh)"]), 'MQB (Unmesh)', ['amber', 'amber', 'amber']) + createBreakdownProgressBar(calculateProgress(subject, ["Retina QB"]), 'Retina QB', ['cyan', 'cyan', 'cyan']); const composite = calculateComposite(); const totalEl = document.getElementById('overall-progress-container'); if(totalEl) { totalEl.innerHTML = `<div class="border border-secondary rounded p-2 mb-3"><div class="font-bold text-sm mb-1">সার্বিক অগ্রগতি</div><div class="grid grid-cols-[1fr,45px] items-center gap-2 text-xs">${createProgressBar(composite.composite, 'lav')}<span class="text-right font-bold">${composite.composite.toFixed(1)}%</span></div></div>`; } const globalSummary = document.getElementById('global-summary-container'); if(globalSummary) { globalSummary.innerHTML = createSingleProgressBarHTML(composite.mainAvg, "মূল পাঠ", "mint") + createSingleProgressBarHTML(composite.revAvg, "রিভিশন", "sky") + createSingleProgressBarHTML(composite.examAvg, "পরীক্ষা", "peach") + createSingleProgressBarHTML(composite.qbAvg, "প্রশ্নব্যাংক", "amber"); } }
-        
-        // ==========================================================
-        // 💡 MODIFIED FUNCTION for View-Only
-        // ==========================================================
-        function renderSyllabusContent() {
-            const container = document.getElementById('syllabus-content'); if(!container) return;
-            const fragment = document.createDocumentFragment();
-            const subjectKey = state.activeSubject;
-            const chaptersByPaper = syllabusData[subjectKey]?.chapters?.reduce((acc, chap) => { (acc[chap.paper] = acc[chap.paper] || []).push(chap); return acc; }, {});
-            if(!chaptersByPaper) { container.innerHTML = 'No chapters found.'; return; }
-            
-            const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`;
-            
-            Object.entries(chaptersByPaper).forEach(([paper, chapters]) => {
-                const details = document.createElement('details');
-                details.dataset.paper = paper;
-                details.open = state.syllabusOpenState[`${subjectKey}-${paper}`] !== false;
-                const paperProgress = calculateProgress(subjectKey, mainStudyItems);
-                const currentPaperProgress = (paper == 1) ? paperProgress.paper1 : paperProgress.paper2;
-                details.innerHTML = `<summary class="flex justify-between items-center p-3 border border-secondary rounded-lg mb-2 cursor-pointer transition-all hover:bg-main"><div class="font-bold flex items-center">${paper}ম পত্র <span class="text-sm font-normal text-muted ml-2" data-paper-percent>(${currentPaperProgress.toFixed(1)}%)</span> <span class="ml-2" data-info-btn-id="paper-${paper}-info-btn"></span></div><div class="w-1/3" data-paper-progress-bar="${paper}">${createProgressBar(currentPaperProgress, paper == 1 ? 'sky' : 'peach')}</div></summary>`;
-                
-                const tableWrapper = document.createElement('div');
-                tableWrapper.className = 'overflow-x-auto';
-                const table = document.createElement('table');
-                table.className = "w-full";
-                table.innerHTML = `<thead><tr class="border-b border-border-primary"><th class="w-1/4 text-left p-2">অধ্যায়</th>${trackableItems.map(h => `<th class="text-center p-2">${h}</th>`).join('')}</tr></thead>`;
-                
-                const tbody = document.createElement('tbody');
-                chapters.forEach(chapter => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b border-border-secondary";
-                    let cells = `<td class="font-medium p-2">${chapter.name}</td>`;
-                    
-                    trackableItems.forEach((item, i) => {
-                        const key = `s_${subjectKey}_${chapter.id}_${i}`;
-                        const status = Number(state.userData?.[key] ?? 0);
-                        
-                        const isDone = status === 5;
-                        const isWont = status === 6;
-                        let statusDisplay;
-
-                        // --- 💡 This is the main change ---
-                        // Replaced clickable <button> with static <div>
-                        if (isWont) {
-                            statusDisplay = `<div class="status-display-box wont mx-auto">✖</div>`;
-                        } else if (isDone) {
-                            statusDisplay = `<div class="status-display-box done mx-auto">${tickIconSVG}</div>`;
-                        } else {
-                            const percentage = status * 20;
-                            statusDisplay = `<div class="status-display-box pending mx-auto">${percentage}%</div>`;
-                        }
-                        // --- End of change ---
-
-                        cells += `<td class="text-center p-2">${statusDisplay}</td>`;
-                    });
-                    tr.innerHTML = cells;
-                    tbody.appendChild(tr);
-                });
-                table.appendChild(tbody);
-                tableWrapper.appendChild(table);
-                details.appendChild(tableWrapper);
-                fragment.appendChild(details);
-            });
-            container.innerHTML = '';
-            container.appendChild(fragment);
-            setupInfoButtons(); // Info buttons still work
+        function renderProgressCards() { const subject = state.activeSubject; const mainProgEl = document.getElementById('selected-subject-main-progress'); if(mainProgEl) mainProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, mainStudyItems), 'মূল বই ও লেকচার') + createBreakdownProgressBar(calculateProgress(subject, revisionItems), 'রিভিশন', ['rose', 'amber', 'lav']); const examProgEl = document.getElementById('selected-subject-exam-progress'); if(examProgEl) examProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, examItems), 'সকল পরীক্ষা', ['peach', 'cyan', 'mint']); const qbProgEl = document.getElementById('selected-subject-qb-progress'); if(qbProgEl) qbProgEl.innerHTML = createBreakdownProgressBar(calculateProgress(subject, ["MQB (Unmesh)"]), 'MQB (Unmesh)', ['amber', 'amber', 'amber']) + createBreakdownProgressBar(calculateProgress(subject, ["Retina QB"]), 'Retina QB', ['cyan', 'cyan', 'cyan']); 
+            const composite = calculateComposite(); // This now returns { mqbAvg, rev1Avg, classAvg, revClassAvg, composite }
+            const totalEl = document.getElementById('overall-progress-container');
+            if(totalEl) { totalEl.innerHTML = `<div class="border border-secondary rounded p-2 mb-3"><div class="font-bold text-sm mb-1">সার্বিক অগ্রগতি (Weighted)</div><div class="grid grid-cols-[1fr,45px] items-center gap-2 text-xs">${createProgressBar(composite.composite, 'lav')}<span class="text-right font-bold">${composite.composite.toFixed(1)}%</span></div></div>`; }
+            const globalSummary = document.getElementById('global-summary-container');
+            if(globalSummary) {
+                globalSummary.innerHTML = createSingleProgressBarHTML(composite.mqbAvg, "MQB (Unmesh) (60%)", "amber") +
+                                      createSingleProgressBarHTML(composite.rev1Avg, "রিভিশন ১ (20%)", "sky") +
+                                      createSingleProgressBarHTML(composite.classAvg, "Class (10%)", "mint") +
+                                      createSingleProgressBarHTML(composite.revClassAvg, "Rev Class (10%)", "peach");
+            }
         }
-        
+        function renderSyllabusContent() { const container = document.getElementById('syllabus-content'); if(!container) return; const fragment = document.createDocumentFragment(); const subjectKey = state.activeSubject; const chaptersByPaper = syllabusData[subjectKey]?.chapters?.reduce((acc, chap) => { (acc[chap.paper] = acc[chap.paper] || []).push(chap); return acc; }, {}); if(!chaptersByPaper) { container.innerHTML = 'No chapters found.'; return; } const noteIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>`; const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`; Object.entries(chaptersByPaper).forEach(([paper, chapters]) => { const details = document.createElement('details'); details.dataset.paper = paper; details.open = state.syllabusOpenState[`${subjectKey}-${paper}`] !== false; const paperProgress = calculateProgress(subjectKey, mainStudyItems); const currentPaperProgress = (paper == 1) ? paperProgress.paper1 : paperProgress.paper2; details.innerHTML = `<summary class="flex justify-between items-center p-3 border border-secondary rounded-lg mb-2 cursor-pointer transition-all hover:bg-main"><div class="font-bold flex items-center">${paper}ম পত্র <span class="text-sm font-normal text-muted ml-2" data-paper-percent>(${currentPaperProgress.toFixed(1)}%)</span> <span class="ml-2" data-info-btn-id="paper-${paper}-info-btn"></span></div><div class="w-1/3" data-paper-progress-bar="${paper}">${createProgressBar(currentPaperProgress, paper == 1 ? 'sky' : 'peach')}</div></summary>`; const tableWrapper = document.createElement('div'); tableWrapper.className = 'overflow-x-auto'; const table = document.createElement('table'); table.className = "w-full"; table.innerHTML = `<thead><tr class="border-b border-border-primary"><th class="w-1/4 text-left p-2">অধ্যায়</th>${trackableItems.map(h => `<th class="text-center p-2">${h}</th>`).join('')}</tr></thead>`; const tbody = document.createElement('tbody'); chapters.forEach(chapter => { const tr = document.createElement('tr'); tr.className = "border-b border-border-secondary"; let cells = `<td class="font-medium p-2">${chapter.name}</td>`; trackableItems.forEach((item, i) => { const key = `s_${subjectKey}_${chapter.id}_${i}`; const status = Number(state.userData?.[key] ?? 0); const noteKey = `note_${key}`; const hasNote = !!state.userData?.[noteKey]; const fillValue = (status <= 4) ? status * 20 : (status === 5 ? 100 : 0); const isDone = status === 5; const isWont = status === 6; const statusText = isWont ? '✖' : (isDone ? tickIconSVG : `${status * 20}%`); cells += `<td class="text-center p-2"><button class="task-status-btn ${isWont ? 'wont' : ''} ${isDone ? 'done' : ''}" data-key="${key}" style="--fill:${fillValue}%"><span class="relative z-10">${statusText}</span></button><button class="note-btn ${hasNote ? 'has-note' : ''} ml-2" data-key="${noteKey}" data-title="${chapter.name} - ${item}">${noteIconSVG}</button></td>`; }); tr.innerHTML = cells; tbody.appendChild(tr); }); table.appendChild(tbody); tableWrapper.appendChild(table); details.appendChild(tableWrapper); fragment.appendChild(details); }); container.innerHTML = ''; container.appendChild(fragment); setupInfoButtons(); }
         function renderStudyStreak() { const container = document.getElementById('streak-container'); if (!container) return; const streak = calculateStudyStreak(); if (streak > 0) { container.innerHTML = `<div class="text-sm flex items-center justify-center gap-2 border border-secondary rounded-md p-2"> <span class="text-lg">🔥</span> <span class="font-bold">আপনি ${streak}-দিনের স্টাডি স্ট্রিকে আছেন!</span> <span class="text-lg">🔥</span> </div>`; } else { container.innerHTML = ''; } }
-        
-        function getWeekDateRange(refDateString) {
-            const refDate = new Date(refDateString);
-            const dayOfWeek = refDate.getDay(); 
-            let firstDayOffset;
-            // This setting is now read-only from the state, not changeable
-            if (state.settings.weekStartDay === 'monday') {
-                firstDayOffset = (dayOfWeek === 0) ? -6 : 1 - dayOfWeek;
-            } else {
-                firstDayOffset = 0 - dayOfWeek;
-            }
-            const first = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate() + firstDayOffset);
-            first.setHours(0,0,0,0);
-            const last = new Date(first.getFullYear(), first.getMonth(), first.getDate() + 6);
-            last.setHours(23,59,59,999);
-            return { 
-                start: first, 
-                end: last, 
-                startFormatted: first.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long'}), 
-                endFormatted: last.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long'}) 
-            };
-        }
-        function formatMinutes(minutes) { if (!minutes || minutes <= 0) return ''; const h = Math.floor(minutes / 60); const m = minutes % 60; let result = ''; if (h > 0) result += `${h} ঘন্টা `; if (m > 0) result += `${m} মিনিট`; return result.trim(); }
-        
-        // ==========================================================
-        // 💡 MODIFIED FUNCTION for View-Only
-        // ==========================================================
-        function renderGoalsCard() {
-            const container = document.getElementById('goal-tracker-card');
-            if (!container) return;
-            const allGoals = state.userData.goals || [];
-            const todayISO = new Date().toISOString().slice(0, 10);
-            const today = new Date(todayISO);
-            today.setHours(0,0,0,0);
-            const weekRange = getWeekDateRange(state.currentWeeklyViewDate);
-
-            // --- 1. Filter Goals (Same as before) ---
-            const todayGoals = allGoals.filter(g => g.dueDate === todayISO);
-            const weeklyGoalsForCurrentView = allGoals.filter(g => {
-                if (!g.dueDate) return false;
-                const goalDate = new Date(g.dueDate);
-                return goalDate >= weekRange.start && goalDate <= weekRange.end;
-            });
-            const overdueGoals = allGoals.filter(g => { 
-                if (!g.dueDate || g.status === 5 || g.status === 6) return false; 
-                const goalDate = new Date(g.dueDate);
-                return goalDate < today;
-            });
-            
-            let historyGoals;
-            if (state.activeGoalTab === 'history') {
-                const finishedGoals = allGoals.filter(g => g.status === 5 || g.status === 6);
-                if (state.historyViewState.mode === 'specificDate' && state.historyViewState.selectedDate) {
-                    historyGoals = finishedGoals.filter(g => {
-                        const dateRef = g.completedAt || g.createdAt;
-                        return dateRef && dateRef.startsWith(state.historyViewState.selectedDate);
-                    });
-                } else {
-                    historyGoals = finishedGoals.filter(g => {
-                        const dateRef = g.completedAt || g.createdAt;
-                        if (!dateRef) return false;
-                        const goalDate = new Date(dateRef);
-                        const sevenDaysAgo = new Date();
-                        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-                        sevenDaysAgo.setHours(0,0,0,0);
-                        return goalDate >= sevenDaysAgo;
-                    });
-                }
-            }
-
-            // --- 2. Calculate Progress (Same as before) ---
-            const getProgress = (goals) => {
-                if (goals.length === 0) return 0;
-                const completableTasks = goals.filter(g => g.status !== 6).length;
-                if (completableTasks === 0) return 0; 
-                const completedTasks = goals.filter(g => g.status === 5).length;
-                return (completedTasks / completableTasks) * 100;
-            };
-            const todayProgress = getProgress(todayGoals);
-            const weeklyProgress = getProgress(weeklyGoalsForCurrentView);
-            const overdueProgress = getProgress(overdueGoals);
-            const allVisibleGoals = [...todayGoals, ...weeklyGoalsForCurrentView, ...overdueGoals];
-            const consolidatedProgress = getProgress(allVisibleGoals);
-            
-            // --- 3. Define Icons & SVGs (Same as before) ---
-            const tickSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.052-.143z" clip-rule="evenodd" /></svg>`;
-            const calendarSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c0-.414.336-.75.75-.75h10.5a.75.75 0 01.75.75v1.25c0 .414-.336.75-.75.75H5.5a.75.75 0 01-.75-.75V7.5z" clip-rule="evenodd" /></svg>`;
-
-            // --- 4. Render Main Card Structure (Same as before) ---
-            container.innerHTML = `
-                <h2 class="text-base font-bold mb-3 flex justify-between items-center">দৈনিক ও সাপ্তাহিক লক্ষ্য <span id="goal-info-btn"></span></h2>
-                <div class="mb-3">${createProgressBar(consolidatedProgress, 'mint')}</div>
-                <div class="flex border-b border-secondary mb-3">
-                    <button data-tab="today" class="goal-tab ${state.activeGoalTab === 'today' ? 'active' : ''}">আজকের লক্ষ্য</button>
-                    <button data-tab="weekly" class="goal-tab ${state.activeGoalTab === 'weekly' ? 'active' : ''}">সাপ্তাহিক লক্ষ্য</button>
-                    <button data-tab="custom" class="goal-tab ${state.activeGoalTab === 'custom' ? 'active' : ''}">অন্যান্য</button>
-                    <button data-tab="history" class="goal-tab ${state.activeGoalTab === 'history' ? 'active' : ''}">ইতিহাস</button>
-                </div>
-                <div id="goal-tab-content"></div>
-            `;
-
-            // --- 5. Render Tab-Specific Content (MODIFIED) ---
-            const contentContainer = container.querySelector('#goal-tab-content');
-            let goalsToShow, progressToShow;
-
-            switch(state.activeGoalTab) {
-                case 'today': goalsToShow = todayGoals; progressToShow = todayProgress; break;
-                case 'weekly': goalsToShow = weeklyGoalsForCurrentView; progressToShow = weeklyProgress; break;
-                case 'custom': goalsToShow = overdueGoals; progressToShow = overdueProgress; break;
-                case 'history': break; // Handled below
-            }
-
-            // --- 💡 This is the main change for the list ---
-            // Replaced clickable buttons with static icons
-            const createGoalListHTML = (goals) => {
-                if (goals.length === 0) {
-                    return `<p class="text-center text-muted text-sm py-4">কোনো লক্ষ্য যোগ করা হয়নি।</p>`;
-                }
-                const groupedGoals = goals.reduce((acc, goal) => {
-                    const dateKey = goal.dueDate || 'No Date';
-                    if (!acc[dateKey]) acc[dateKey] = [];
-                    acc[dateKey].push(goal);
-                    return acc;
-                }, {});
-
-                const sortedDates = Object.keys(groupedGoals).sort((a, b) => {
-                    if (a === 'No Date') return 1; if (b === 'No Date') return -1;
-                    return new Date(a) - new Date(b);
-                });
-
-                return sortedDates.map(date => {
-                    const dateLabel = (date === 'No Date') ? 'তারিখবিহীন' : (date === todayISO ? 'আজ' : new Date(date).toLocaleDateString('bn-BD', { day: 'numeric', month: 'long' }));
-                    return `
-                        <h3 class="font-semibold text-xs text-muted pt-3 pb-1 px-1">${dateLabel}</h3>
-                        <ul class="goal-list-sub space-y-2 mb-4">
-                            ${groupedGoals[date].map((goal, index) => {
-                                const serialNumber = index + 1;
-                                const status = Number(goal.status || 0);
-                                const isDone = status === 5;
-                                const isWont = status === 6;
-                                
-                                let statusIcon;
-                                if (isWont) {
-                                    statusIcon = `<div class="goal-tick-icon wont">✖</div>`;
-                                } else if (isDone) {
-                                    statusIcon = `<div class="goal-tick-icon">${tickSVG}</div>`;
-                                } else {
-                                    statusIcon = `<div class="goal-tick-icon"><span>${serialNumber}</span></div>`;
-                                }
-
-                                return `
-                                <li class="goal-list-item ${isDone ? 'completed' : ''}" data-goal-id="${goal.id}">
-                                    ${statusIcon}
-                                    <span class="goal-title">${goal.title}</span>
-                                    <span class="goal-time">${formatMinutes(goal.estimateTimeMin)}</span>
-                                    </li>`;
-                            }).join('')}
-                        </ul>`;
-                }).join('');
-            };
-            // --- End of change ---
-
-            if (state.activeGoalTab === 'history') {
-                contentContainer.innerHTML = `
-                    <div class="flex items-center justify-between gap-2 mb-3 text-xs">
-                        <div class="flex items-center gap-2">
-                            <input type="date" id="history-date-picker" class="goal-add-input w-auto" value="${state.historyViewState.selectedDate || ''}">
-                            <button id="view-specific-date-btn" class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded-md">দেখুন</button>
-                        </div>
-                        <button id="view-last-7-days-btn" class="px-2 py-1 ${state.historyViewState.mode === 'last7days' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'} rounded-md">গত ৭ দিন</button>
-                    </div>
-                    <div id="goal-list-container">
-                    ${(historyGoals.length === 0 ? 
-                        `<p class="text-center text-muted text-sm py-4">এই তারিখে কোনো লক্ষ্য সম্পন্ন হয়নি।</p>` : 
-                        `<ul class="space-y-2 mb-4">${historyGoals.sort((a,b) => new Date(b.completedAt || b.createdAt) - new Date(a.completedAt || a.createdAt)).map(goal => {
-                            const isDone = goal.status === 5;
-                            const buttonIcon = isDone ? `<span class="goal-tick-icon" style="background: #22c55e; border-color: #15803d; color: #fff;">${tickSVG}</span>` : `<span class="goal-tick-icon wont">✖</span>`;
-                            const dateText = new Date(goal.completedAt || goal.createdAt).toLocaleDateString('bn-BD');
-                            return `<li class="goal-list-item ${isDone ? 'completed' : ''}">${buttonIcon}<span class="goal-title">${goal.title}</span><span class="text-xs text-muted">${dateText}</span></li>`
-                        }).join('')}</ul>`
-                    )}
-                    </div>`;
-            } else {
-                let tabHeader = '', progressComparisonHTML = '';
-                if (state.activeGoalTab === 'weekly') {
-                    const prevWeekRef = new Date(weekRange.start); prevWeekRef.setDate(prevWeekRef.getDate() - 1);
-                    const previousWeekRange = getWeekDateRange(prevWeekRef.toISOString());
-                    const previousWeekGoals = allGoals.filter(g => g.dueDate && new Date(g.dueDate) >= previousWeekRange.start && new Date(g.dueDate) <= previousWeekRange.end);
-                    if (previousWeekGoals.filter(g => g.status !== 6).length > 0) { 
-                        const previousWeekProgress = getProgress(previousWeekGoals);
-                        const progressDifference = weeklyProgress - previousWeekProgress;
-                        if (progressDifference > 0.1) progressComparisonHTML = `<span class="text-green-500 font-semibold ml-2">(গত সপ্তাহ থেকে ${progressDifference.toFixed(0)}% বেশি)</span>`;
-                        else if (progressDifference < -0.1) progressComparisonHTML = `<span class="text-red-500 font-semibold ml-2">(গত সপ্তাহ থেকে ${Math.abs(progressDifference).toFixed(0)}% কম)</span>`;
-                    }
-                    tabHeader = `
-                    <div class="text-xs text-center text-muted mb-2 font-semibold flex justify-center items-center gap-2">
-                        <label id="week-selector-label" class="cursor-pointer flex items-center gap-2"><span>${weekRange.startFormatted} - ${weekRange.endFormatted}</span>${calendarSVG}</label>
-                        <input type="date" id="week-selector-input" class="hidden absolute" value="${state.currentWeeklyViewDate.slice(0,10)}">
-                    </div>`;
-                }
-                
-                // --- 💡 MODIFIED: <form> for adding goals is REMOVED ---
-                contentContainer.innerHTML = `
-                    ${tabHeader}
-                    <div class="mb-3">
-                        <div class="text-xs flex justify-between items-center mb-1">
-                            <span>${{'today':'আজকের', 'weekly':'সাপ্তাহিক', 'custom':'অন্যান্য'}[state.activeGoalTab]} অগ্রগতি ${progressComparisonHTML}</span>
-                            <strong>${progressToShow.toFixed(0)}%</strong>
-                        </div>
-                        ${createProgressBar(progressToShow, 'sky')}
-                    </div>
-                    <div id="goal-list-container">${createGoalListHTML(goalsToShow)}</div>
-                    `;
-            }
-            attach('#goal-info-btn', { modalTitle: "দৈনিক ও সাপ্তাহিক লক্ষ্য", modalDesc: "আপনার দৈনন্দিন এবং সাপ্তাহিক লক্ষ্যগুলো এখানে ট্র্যাক করুন। সম্পন্ন করা লক্ষ্যগুলো 'ইতিহাস' ট্যাবে পর্যালোচনার জন্য দেখানো হয়।", modalItems: ["লক্ষ্য যোগ করুন এবং তারিখ ও সময়সীমা দিন।", "লক্ষ্য সম্পন্ন করতে বৃত্তে ক্লিক করুন (০% -> ২০% ... -> Done ✓)।", "সবশেষে 'Won't Do ✖' অপশন আসবে।","ট্র্যাশ আইকন ব্যবহার করে লক্ষ্য মুছে ফেলুন."] });
-        }
         
         const attach = (selector, data) => { try { const el = document.querySelector(selector); if(el) { el.innerHTML = ''; el.append(createInfoButton(data)); }} catch(e){ console.warn(`Failed attaching info btn to ${selector}`, e)} };
         
@@ -572,46 +354,37 @@
             attach('#main-progress-info-btn', {modalTitle: "মূল অগ্রগতি গণনা", modalDesc: "মূল বই ও ক্লাস লেকচারের গড় অগ্রগতি। বায়োলজি ও কেমিস্ট্রির জন্য মূল বই ও মেডিট্রিক্স এর মধ্যে সর্বোচ্চটি এবং ফিজিক্সে মূল বই বাদ দিয়ে গণনা করা হয়।", modalItems: mainStudyItems.concat(revisionItems)});
             attach('#exam-progress-info-btn', {modalTitle: "পরীক্ষার অগ্রগতি গণনা", modalDesc: "সকল ধরণের পরীক্ষার গড় অগ্রগতি।", modalItems: examItems});
             attach('#qb-progress-info-btn', {modalTitle: "প্রশ্নব্যাংক গণনা", modalDesc: "সকল প্রশ্নব্যাংক সমাধানের গড় অগ্রগতি।", modalItems: qbItems});
-            attach('#global-summary-info-btn', {modalTitle: "সার্বিক সারাংশ ও Composite", modalDesc: "সার্বিক অগ্রগতি (Composite): সকল বিষয়ের Main Study, Revision, Exams, এবং QB - এই চারটি বিভাগের সার্বিক অগ্রগতির গড়।", modalItems: ["Overall Progress", "Global Main Study", "Global Revision", "Global Exams", "Global Question Banks"]});
+            attach('#global-summary-info-btn', {modalTitle: "সার্বিক সারাংশ ও Weighted Progress", modalDesc: "সার্বিক অগ্রগতি (Weighted): আপনার সেট করা নতুন সূত্র অনুযায়ী গণনা করা হয়েছে।", modalItems: ["MQB (Unmesh) (60%)", "রিভিশন ১ (20%)", "Class (10%)", "Rev Class (10%)"]});
             attach('[data-info-btn-id="paper-1-info-btn"]', {modalTitle: "১ম পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ১ম পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
             attach('[data-info-btn-id="paper-2-info-btn"]', {modalTitle: "২য় পত্র অগ্রগতি", modalDesc: "নির্বাচিত বিষয়ের শুধুমাত্র ২য় পত্রের অধ্যায়গুলোর মূল অগ্রগতি দেখানো হয়েছে।", modalItems: mainStudyItems});
             attach('#countdown-info-btn', { modalTitle: "Countdown Target", modalDesc: `Counting down to: ${TARGET_DATE_STRING}`, modalItems: [] }); 
         }
         
-        // All data-writing functions (updateState, updateSetting for DB) are removed.
-        // This is a view-only setting update, it will not be saved.
-        function updateSetting(key, value) {
-            state.settings[key] = value;
-        }
-
-        function rerenderProgressBarsOnly() { 
-            try { 
-                renderSubjectSelector(); 
-                renderProgressCards(); 
-                renderStudyStreak(); 
-                const subjectKey = state.activeSubject; 
-                const paperProgress = calculateProgress(subjectKey, mainStudyItems); 
-                updatePaperSummaryProgress(1, paperProgress.paper1); 
-                updatePaperSummaryProgress(2, paperProgress.paper2); 
-            } catch (e) { 
-                console.error("Error updating visuals:", e); 
-                renderAll(); 
-            } 
-        }
-        function updatePaperSummaryProgress(paperNum, progressValue) { const summaryEl = document.querySelector(`details[data-paper="${paperNum}"] > summary`); if (summaryEl) { const progressDiv = summaryEl.querySelector(`[data-paper-progress-bar="${paperNum}"]`); const percentSpan = summaryEl.querySelector('[data-paper-percent]'); const color = paperNum === 1 ? 'sky' : 'peach'; if (progressDiv) progressDiv.innerHTML = createProgressBar(progressValue, color); if (percentSpan) percentSpan.textContent = `(${progressValue.toFixed(1)}%)`; } }
+        let updateTimeout; let noteModalOverlay, noteModalTitle, noteTextarea, syncModalOverlay, importConfirmModal;
+        async function updateSetting(key, value) { state.settings[key] = value; try { await writeToDB('userData', { id: `setting_${key}`, value }); } catch (e) { console.error(`Failed to save setting: ${key}`, e); if(e.message === 'QuotaExceededError') showToast('❌ Could not save setting: Storage full!', 'error'); else showToast('❌ Could not save setting!', 'error'); } }
+        async function updateState(key, value) { const dataKey = key.startsWith('userData.') ? key.substring(9) : key; state.userData[dataKey] = value; const writesToQueue = [{ key: dataKey, value }]; if (dataKey.startsWith('s_')) { const timestampKey = `timestamp_${dataKey}`; state.userData[timestampKey] = new Date().toISOString(); writesToQueue.push({ key: timestampKey, value: state.userData[timestampKey] }); } try { for (const item of writesToQueue) { await writeToDB('pendingWrites', item); } await writeToDB('userData', { id: 'main', value: state.userData }); const syncStatusEl = document.getElementById('connection-status'); if (syncStatusEl) { syncStatusEl.title = 'Saved locally'; } await updateSyncQueueCount(); syncPendingWrites(); } catch (e) { console.error("DB write failed:", e); if (e.message === 'QuotaExceededError') { showToast('❌ Local storage is full! Please export data and clear storage.', 'error'); } else { showToast('❌ Local save failed!', 'error'); } } }
         
-        // syncPendingWrites function is removed as this page does not write data.
-
+        function rerenderProgressBarsOnly() { try { renderSubjectSelector(); renderProgressCards(); renderStudyStreak(); const subjectKey = state.activeSubject; const paperProgress = calculateProgress(subjectKey, mainStudyItems); updatePaperSummaryProgress(1, paperProgress.paper1); updatePaperSummaryProgress(2, paperProgress.paper2); updateSyncQueueCount(); } catch (e) { console.error("Error updating visuals:", e); renderAll(); } }
+        function updatePaperSummaryProgress(paperNum, progressValue) { const summaryEl = document.querySelector(`details[data-paper="${paperNum}"] > summary`); if (summaryEl) { const progressDiv = summaryEl.querySelector(`[data-paper-progress-bar="${paperNum}"]`); const percentSpan = summaryEl.querySelector('[data-paper-percent]'); const color = paperNum === 1 ? 'sky' : 'peach'; if (progressDiv) progressDiv.innerHTML = createProgressBar(progressValue, color); if (percentSpan) percentSpan.textContent = `(${progressValue.toFixed(1)}%)`; } }
+        async function syncPendingWrites() { const syncStatusEl = document.getElementById('connection-status'); const lastSyncedEl = document.getElementById('last-synced-time'); if (!db || !userDocRef) { if (syncStatusEl) { syncStatusEl.title = 'Firebase Error'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error'; } return; } if (!navigator.onLine) { if (syncStatusEl) { syncStatusEl.title = 'Offline'; syncStatusEl.className = 'w-3 h-3 rounded-full status-offline'; } return; } const pending = await getAllFromDB('pendingWrites'); await updateSyncQueueCount(pending.length); if (pending.length === 0) { const lastSynced = (await getFromDB('userData', 'setting_lastSynced'))?.value; if (syncStatusEl) { syncStatusEl.title = lastSynced ? `Synced: ${lastSynced}` : 'Synced'; syncStatusEl.className = 'w-3 h-3 rounded-full status-online'; } if (lastSyncedEl) lastSyncedEl.textContent = lastSynced || 'Up to date'; return; } if (syncStatusEl) { syncStatusEl.title = `Syncing ${pending.length} changes...`; syncStatusEl.className = 'w-3 h-3 rounded-full status-syncing animate-pulse'; } try { const updates = {}; pending.forEach(item => { updates[item.key] = item.value }); await setDoc(userDocRef, updates, { merge: true }); await clearDBStore('pendingWrites'); const now = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); await writeToDB('userData', { id: 'setting_lastSynced', value: now }); if (syncStatusEl) { syncStatusEl.title = `Synced: ${now}`; syncStatusEl.className = 'w-3 h-3 rounded-full status-online'; } if (lastSyncedEl) lastSyncedEl.textContent = now; showToast('✅ Sync Successful!', 'success'); await updateSyncQueueCount(0); } catch (error) { console.error("Sync error: ", error); if (syncStatusEl) { syncStatusEl.title = 'Sync Failed'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error'; } if (error.message === 'QuotaExceededError') { showToast('❌ Sync Failed: Storage full!', 'error'); } else { showToast(`❌ Sync Failed! ${error.code || error.message}`, 'error'); } } }
+        function checkMilestones() { const newCompositeProgress = calculateComposite().composite; const milestones = [50, 75, 100]; milestones.forEach(ms => { if (state.lastCompositeProgress < ms && newCompositeProgress >= ms) { showToast(`🎉 মাইলফলক অর্জিত: ${ms}% সামগ্রিক অগ্রগতি!`, 'success'); } }); state.lastCompositeProgress = newCompositeProgress; }
+        
         function showToast(message, type = 'success', options = {}) { const container = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = `px-3 py-1.5 text-sm rounded-lg shadow-lg ${type === 'error' ? 'bg-red-600' : 'bg-green-600'} text-white transition-all duration-300 transform opacity-0 translate-y-5 flex items-center gap-4`; const messageSpan = document.createElement('span'); messageSpan.textContent = message; t.appendChild(messageSpan); if (options.actionText && options.action) { const actionBtn = document.createElement('button'); actionBtn.textContent = options.actionText; actionBtn.className = 'font-bold underline'; actionBtn.onclick = () => { options.action(); t.remove(); }; t.appendChild(actionBtn); } container.appendChild(t); setTimeout(() => t.classList.remove('opacity-0', 'translate-y-5'), 50); const duration = options.duration || 5000; setTimeout(() => { if (document.body.contains(t)) { t.classList.add('opacity-0', 'translate-y-5'); t.addEventListener('transitionend', () => t.remove()); } }, duration); }
         
-        // Note Modal functions are removed.
-        // Sync Modal functions are removed.
+        let currentNoteKey = null; let initialNoteValue = '';
+        function openNoteModal(key, title) { currentNoteKey = key; initialNoteValue = state.userData?.[key] ?? ''; if(noteModalTitle) noteModalTitle.textContent = `নোট: ${title}`; if(noteTextarea) noteTextarea.value = initialNoteValue; noteModalOverlay?.classList.add('visible'); }
+        function closeNoteModal() { noteModalOverlay?.classList.remove('visible'); currentNoteKey = null; initialNoteValue = ''; }
+        function setupModalEventHandlers() { document.getElementById('note-modal-save')?.addEventListener('click', () => { if (currentNoteKey) { const newValue = noteTextarea.value; updateState(`userData.${currentNoteKey}`, newValue); const btn = document.querySelector(`.note-btn[data-key="${currentNoteKey}"]`); if(btn) btn.classList.toggle('has-note', !!newValue); } closeNoteModal(); }); document.getElementById('note-modal-cancel')?.addEventListener('click', closeNoteModal); document.getElementById('note-modal-clear')?.addEventListener('click', () => { if(noteTextarea) noteTextarea.value = ''}); document.getElementById('note-modal-undo')?.addEventListener('click', () => { if(noteTextarea) noteTextarea.value = initialNoteValue}); noteModalOverlay?.addEventListener('click', e => { if (e.target === noteModalOverlay) closeNoteModal(); }); document.getElementById('sync-queue-btn')?.addEventListener('click', openSyncQueueModal); document.getElementById('sync-modal-close')?.addEventListener('click', closeSyncQueueModal); document.getElementById('sync-modal-now')?.addEventListener('click', () => { syncPendingWrites(); closeSyncQueueModal(); }); document.getElementById('sync-modal-clear')?.addEventListener('click', async () => { const pending = await getAllFromDB('pendingWrites'); if (pending.length === 0) { showToast('Sync queue is already empty.', 'success'); return; } const clearAction = async () => { try { await clearDBStore('pendingWrites'); await updateSyncQueueCount(0); showToast('✅ Local changes cleared!', 'success'); renderSyncQueuePanel(); } catch(e) { showToast('❌ Failed to clear changes!', 'error'); } }; const undoAction = async () => { try { for (const item of pending) { await writeToDB('pendingWrites', item); } await updateSyncQueueCount(); renderSyncQueuePanel(); } catch (e) { showToast('❌ Undo failed!', 'error'); } }; clearAction(); showToast('Sync queue cleared.', 'success', { actionText: 'Undo', action: undoAction }); }); syncModalOverlay?.addEventListener('click', e => { if (e.target === syncModalOverlay) closeSyncQueueModal(); }); document.getElementById('import-confirm-cancel')?.addEventListener('click', () => { pendingImportData = null; importConfirmModal?.classList.remove('visible'); }); document.getElementById('import-confirm-proceed')?.addEventListener('click', () => { if(pendingImportData) { state.userData = pendingImportData; writeToDB('userData', {id: 'main', value: state.userData}).then(() => { showToast('✅ Data imported! Reloading...', 'success'); setTimeout(() => window.location.reload(), 1500); }); } importConfirmModal?.classList.remove('visible'); }); 
+        }
+        function openSyncQueueModal() { renderSyncQueuePanel(); syncModalOverlay?.classList.add('visible'); }
+        function closeSyncQueueModal() { syncModalOverlay?.classList.remove('visible'); }
+        function translateSyncKey(key) { if (key === 'studyGoal') return 'Study Goal'; if (key.startsWith('note_')) { const parts = key.replace('note_s_', '').split('_'); const subject = syllabusData[parts[0]]?.name || parts[0]; const chapter = syllabusData[parts[0]]?.chapters?.find(c => c.id == parts[1])?.name || `Ch ${parts[1]}`; const item = trackableItems[parts[2]] || `Item ${parts[2]}`; return `Note: ${subject} - ${chapter} - ${item}`; } if (key.startsWith('s_')) { const parts = key.replace('s_', '').split('_'); const subject = syllabusData[parts[0]]?.name || parts[0]; const chapter = syllabusData[parts[0]]?.chapters?.find(c => c.id == parts[1])?.name || `Ch ${parts[1]}`; const item = trackableItems[parts[2]] || `Item ${parts[2]}`; return `Update: ${subject} - ${chapter} - ${item}`; } if (key.startsWith('timestamp_')) return `Timestamp for ${translateSyncKey(key.replace('timestamp_', ''))}`; return key; }
+        async function renderSyncQueuePanel() { const listEl = document.getElementById('sync-queue-list'); const countEl = document.getElementById('sync-modal-count'); if (!listEl || !countEl) return; const pending = await getAllFromDB('pendingWrites'); countEl.textContent = pending.length; if (pending.length === 0) { listEl.innerHTML = '<li>No pending changes.</li>'; return; } listEl.innerHTML = ''; pending.forEach(item => { const li = document.createElement('li'); li.textContent = translateSyncKey(item.key); listEl.appendChild(li); }); }
+        async function updateSyncQueueCount(count = null) { const badge = document.getElementById('sync-queue-count'); if (!badge) return; try { const currentCount = count ?? (await getAllFromDB('pendingWrites')).length; badge.textContent = currentCount; badge.style.display = currentCount > 0 ? 'flex' : 'none'; } catch(e){ console.error("Failed to update sync count", e); }}
         
-        // ==========================================================
-        // 💡 MODIFIED FUNCTION for View-Only
-        // ==========================================================
         function setupEventHandlers() {
             const infoModalOverlay = document.getElementById('info-modal-overlay');
+            const tickIconSVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`;
             const settingsBtn = document.getElementById('settings-btn');
             const settingsPanel = document.getElementById('settings-panel');
 
@@ -619,25 +392,14 @@
                 const target = e.target;
                 const targetBtn = target.closest('button');
 
-                // Settings Panel Toggle
-                if (settingsBtn && settingsPanel) { 
-                    if (settingsBtn.contains(target)) { 
-                        initAudio(); 
-                        settingsPanel.classList.toggle('hidden'); 
-                        return; 
-                    } 
-                    if (!settingsPanel.classList.contains('hidden') && !settingsPanel.contains(target) && !target.closest('.modal-overlay')) { 
-                        settingsPanel.classList.add('hidden'); 
-                    } 
-                }
+                if (settingsBtn && settingsPanel) { if (settingsBtn.contains(target)) { initAudio(); settingsPanel.classList.toggle('hidden'); return; } if (!settingsPanel.classList.contains('hidden') && !settingsPanel.contains(target) && !target.closest('.modal-overlay')) { settingsPanel.classList.add('hidden'); } }
+                if (target.closest('button, a, .task-status-btn, .subject-progress-btn, .goal-tick-btn, summary, .goal-tab, #week-selector-label')) { playTickSound(); }
                 
-                // Sound on click
-                if (target.closest('button, a, .subject-progress-btn, summary, .goal-tab, #week-selector-label')) { 
-                    playTickSound(); 
-                }
-
                 if (targetBtn) {
-                    // Info Button Logic (Remains)
+                    
+                    // ==========================================================
+                    // 🐞 BUG FIX (v18.4): Info Button Logic Added
+                    // ==========================================================
                     if (targetBtn.classList.contains('info-btn')) {
                         const data = targetBtn.dataset;
                         const infoModalOverlay = document.getElementById('info-modal-overlay');
@@ -646,9 +408,12 @@
                         const itemsEl = document.getElementById('info-modal-items');
 
                         if (infoModalOverlay && titleEl && descEl && itemsEl) {
+                            // 1. Set title and description
                             titleEl.textContent = data.modalTitle || 'তথ্য';
                             descEl.textContent = data.modalDesc || 'কোনো বর্ণনা নেই।';
-                            itemsEl.innerHTML = ''; 
+                            
+                            // 2. Create item list (from JSON string)
+                            itemsEl.innerHTML = ''; // Clear previous items
                             try {
                                 const items = JSON.parse(data.modalItems || '[]');
                                 if (items.length > 0) {
@@ -658,59 +423,60 @@
                                         itemsEl.appendChild(li);
                                     });
                                 } else {
+                                    // If no items
                                     itemsEl.innerHTML = '<li>N/A</li>';
                                 }
                             } catch (err) {
                                 console.error("Failed to parse modal items:", err);
                                 itemsEl.innerHTML = '<li>Error loading items.</li>';
                             }
+                            
+                            // 3. Show the modal
                             infoModalOverlay.classList.add('visible');
                         }
-                        return; 
+                        return; // Stop further execution
                     }
+                    // ==========================================================
+                    // END OF BUG FIX
+                    // ==========================================================
                     
-                    // ALL OTHER BUTTON LOGIC (task-status-btn, note-btn) is REMOVED.
-                }
-
-                // Goal card interactions (tick, delete, etc.) are REMOVED.
-                const goalCard = target.closest('#goal-tracker-card');
-                if (goalCard) {
-                    const tabBtn = target.closest('.goal-tab');
-                    if (tabBtn) { 
-                        state.activeGoalTab = tabBtn.dataset.tab; 
-                        if(tabBtn.dataset.tab !== 'weekly') state.currentWeeklyViewDate = new Date().toISOString(); 
-                        renderGoalsCard(); 
-                        return; 
+                    // v18.3: Synchronous UI Update Logic
+                    if (targetBtn.classList.contains('task-status-btn')) {
+                        const key = targetBtn.dataset.key;
+                        const currentStatus = Number(state.userData[key] ?? 0);
+                        const newStatus = (currentStatus + 1) % 7;
+                        
+                        // Update local state immediately
+                        state.userData[key] = newStatus;
+                        
+                        // Update button visuals immediately
+                        const isDone = newStatus === 5;
+                        const isWont = newStatus === 6;
+                        const fillValue = (newStatus <= 4) ? newStatus * 20 : (isDone ? 100 : 0);
+                        targetBtn.style.setProperty('--fill', `${fillValue}%`);
+                        targetBtn.classList.toggle('wont', isWont);
+                        targetBtn.classList.toggle('done', isDone);
+                        const iconSpan = targetBtn.querySelector('span');
+                        if (iconSpan) {
+                            iconSpan.innerHTML = isWont ? '✖' : (isDone ? tickIconSVG : `${newStatus * 20}%`);
+                        }
+                        
+                        // Update progress bars synchronously (before async DB write)
+                        rerenderProgressBarsOnly();
+                        
+                        // Then persist to DB asynchronously
+                        updateState(`userData.${key}`, newStatus);
+                        return;
                     }
-                    if(target.id === 'view-specific-date-btn') { const datePicker = document.getElementById('history-date-picker'); if (datePicker && datePicker.value) { state.historyViewState.mode = 'specificDate'; state.historyViewState.selectedDate = datePicker.value; renderGoalsCard(); } }
-                    if(target.id === 'view-last-7-days-btn') { state.historyViewState.mode = 'last7days'; state.historyViewState.selectedDate = null; renderGoalsCard(); }
-                    if(target.closest('#week-selector-label')) { 
-                        const dateInput = document.getElementById('week-selector-input'); 
-                        if(dateInput) { try { dateInput.showPicker(); } catch (e) { console.error("showPicker() failed, falling back to click()", e); dateInput.click(); } } 
-                    } 
+
+                    if (targetBtn.classList.contains('note-btn')) { openNoteModal(targetBtn.dataset.key, targetBtn.dataset.title); return; }
                 }
             });
 
             // --- Other event handlers ---
-            const soundSlider = document.getElementById('sound-volume-slider'); 
-            if (soundSlider) { 
-                soundSlider.addEventListener('input', (e) => updateSoundVolume(e.target.value)); 
-                soundSlider.addEventListener('change', (e) => { 
-                    // No saving, just play sound
-                    playTickSound(); 
-                }); 
-            }
+            const soundSlider = document.getElementById('sound-volume-slider'); if (soundSlider) { soundSlider.addEventListener('input', (e) => updateSoundVolume(e.target.value)); soundSlider.addEventListener('change', (e) => { updateSetting('soundVolume', e.target.value); playTickSound(); }); }
+            document.getElementById('print-report-btn')?.addEventListener('click', printReport); document.getElementById('export-json-btn')?.addEventListener('click', exportFullBackup); document.getElementById('export-csv-btn')?.addEventListener('click', exportDataToCSV); document.getElementById('import-data-btn')?.addEventListener('click', () => document.getElementById('import-file-input')?.click()); document.getElementById('import-file-input')?.addEventListener('change', importFullBackup);
             
-            // Removed submit, change (for goals), drag/drop handlers
-            
-            document.body.addEventListener('change', e => { 
-                const target = e.target; 
-                if (target.id === 'week-selector-input') { 
-                    state.currentWeeklyViewDate = new Date(target.value).toISOString(); 
-                    renderGoalsCard(); 
-                } 
-            });
-
             const closeInfoModal = () => infoModalOverlay.classList.remove('visible');
             infoModalOverlay.addEventListener('click', e => { if (e.target === infoModalOverlay) closeInfoModal(); });
             document.getElementById('info-modal-close')?.addEventListener('click', closeInfoModal);
@@ -718,116 +484,65 @@
             const syllabusContent = document.getElementById('syllabus-content'); if (syllabusContent) { syllabusContent.addEventListener('toggle', (e) => { if (e.target.tagName === 'DETAILS') { const paper = e.target.dataset.paper; if(paper) state.syllabusOpenState[`${state.activeSubject}-${paper}`] = e.target.open; } }, true); }
         }
         
-        // All data-changing goal functions are removed (makeGoalEditable, reorderGoals, addGoal, toggleGoal, deleteGoal, updateGoalDate)
-        
         let countdownInterval;
-        function startCountdown() { if(countdownInterval) clearInterval(countdownInterval); const target = new Date(`${TARGET_DATE_STRING}T00:00:00+06:00`); const countdownEl = document.getElementById('countdown'); if(!countdownEl) return; const tick = () => { try { const diff = Math.max(0, target - new Date()); const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3); countdownEl.innerHTML = `<div class="text-center"><div class="countdown-num">${d}</div><div class="countdown-label">দিন</div></div><div class="text-center"><div class="countdown-num">${String(h).padStart(2,'0')}</div><div class="countdown-label">ঘণ্টা</div></div><div class="text-center"><div class="countdown-num">${String(m).padStart(2,'0')}</div><div class="countdown-label">মিনিট</div></div><div class="text-center"><div class="countdown-num">${String(s).padStart(2,'0')}</div><div class="countdown-label">সেকেন্ড</div></div>`; } catch(e){ console.error("Countdown tick error:", e); clearInterval(countdownInterval)} }; try { tick(); countdownInterval = setInterval(tick, 1000); } catch(e){ console.error("Countdown setup error:", e) } }
+        function startCountdown() { if(countdownInterval) clearInterval(countdownInterval); const target = new Date(`${TARGET_DATE_STRING}T00:00:00+06:00`); const countdownEl = document.getElementById('countdown'); if(!countdownEl) return; const tick = () => { try { const diff = Math.max(0, target - new Date()); const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5), m = Math.floor((diff % 36e5) / 6e4), s = Math.floor((diff % 6e4) / 1e3); countdownEl.innerHTML = `<div class="countdown-block"><div class="countdown-num">${d}</div><div class="countdown-label">দিন</div></div><div class="countdown-block"><div class="countdown-num">${String(h).padStart(2,'0')}</div><div class="countdown-label">ঘণ্টা</div></div><div class="countdown-block"><div class="countdown-num">${String(m).padStart(2,'0')}</div><div class="countdown-label">মিনিট</div></div><div class="countdown-block"><div class="countdown-num">${String(s).padStart(2,'0')}</div><div class="countdown-l
+abel">সেকেন্ড</div></div>`; } catch(e){ console.error("Countdown tick error:", e); clearInterval(countdownInterval)} }; try { tick(); countdownInterval = setInterval(tick, 1000); } catch(e){ console.error("Countdown setup error:", e) } }
+        function setupThemeToggle() { const btn = document.getElementById('theme-toggle-btn'); const meta = document.getElementById('theme-color-meta'); if (!btn || !meta) return; const applyTheme = (theme) => { document.documentElement.setAttribute('data-theme', theme); btn.textContent = theme === 'dark' ? '☀️' : '🌙'; meta.content = theme === 'dark' ? '#1c1c1c' : '#f8f7f2'; }; btn.addEventListener('click', () => { const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; updateSetting('theme', newTheme); applyTheme(newTheme); }); applyTheme(state.settings.theme); }
+        function setupViewToggle() { const btn = document.getElementById('view-toggle-btn'); const viewportMeta = document.querySelector('meta[name="viewport"]'); if (!btn || !viewportMeta) return; const applyView = (mode) => { if (mode === 'desktop') { document.body.classList.add('desktop-view'); viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); btn.textContent = "Mobile View"; } else { document.body.classList.remove('desktop-view'); viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); btn.textContent = "Desktop View"; } }; btn.addEventListener('click', () => { const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; updateSetting('viewMode', newMode); applyView(newMode); }); applyView(state.settings.viewMode); }
         
-        function setupThemeToggle() { 
-            const btn = document.getElementById('theme-toggle-btn'); 
-            const meta = document.getElementById('theme-color-meta'); 
-            if (!btn || !meta) return; 
-            const applyTheme = (theme) => { 
-                document.documentElement.setAttribute('data-theme', theme); 
-                btn.textContent = theme === 'dark' ? '☀️' : '🌙'; 
-                meta.content = theme === 'dark' ? '#1c1c1c' : '#f8f7f2'; 
-            }; 
-            btn.addEventListener('click', () => { 
-                const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'; 
-                updateSetting('theme', newTheme); // No DB save, just local state
-                applyTheme(newTheme); 
-            }); 
-            applyTheme(state.settings.theme); 
-        }
-        
-        function setupViewToggle() { 
-            const btn = document.getElementById('view-toggle-btn'); 
-            const viewportMeta = document.querySelector('meta[name="viewport"]'); 
-            if (!btn || !viewportMeta) return; 
-            const applyView = (mode) => { 
-                if (mode === 'desktop') { 
-                    document.body.classList.add('desktop-view'); 
-                    viewportMeta.setAttribute('content', 'width=1280, initial-scale=1'); 
-                    btn.textContent = "Mobile View"; 
-                } else { 
-                    document.body.classList.remove('desktop-view'); 
-                    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0'); 
-                    btn.textContent = "Desktop View"; 
-                } 
-            }; 
-            btn.addEventListener('click', () => { 
-                const newMode = document.body.classList.contains('desktop-view') ? 'mobile' : 'desktop'; 
-                updateSetting('viewMode', newMode); // No DB save, just local state
-                applyView(newMode); 
-            }); 
-            applyView(state.settings.viewMode); 
-        }
-        
-        // Export/Import/Print functions are removed.
+        function exportFullBackup() { try { const blob = new Blob([JSON.stringify(state.userData, null, 2)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `as_study_dashboard_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); showToast('✅ JSON backup exported!', 'success'); } catch (e) { console.error("JSON Export Failed:", e); showToast('❌ JSON export failed!', 'error'); } }
+        function exportDataToCSV() { try { const headers = ['Subject', 'Paper', 'Chapter', 'Item', 'Status', 'Percentage', 'Note', 'LastUpdated']; const statusMap = { 0: 'Not Started', 1: '20%', 2: '40%', 3: '60%', 4: '80%', 5: 'Done', 6: "Won't Do" }; const dataRows = Object.keys(state.userData).filter(key => key.startsWith('s_')).map(key => { const parts = key.replace('s_', '').split('_'); const subjectKey = parts[0]; const chapterId = parseInt(parts[1]); const itemIndex = parseInt(parts[2]); const subject = syllabusData[subjectKey]; const chapter = subject?.chapters.find(c => c.id === chapterId); const item = trackableItems[itemIndex]; if (!subject || !chapter || !item) return null; const statusValue = state.userData[key] ?? 0; const noteKey = `note_${key}`; const timestampKey = `timestamp_${key}`; const safeNote = (state.userData[noteKey] || '').replace(/"/g, '""').replace(/\r?\n/g, ' '); const percentage = statusValue >= 0 && statusValue <= 4 ? statusValue * 20 : (statusValue === 5 ? 100 : 0); const row = [subject.name, chapter.paper, chapter.name, item, statusMap[statusValue], percentage, safeNote, state.userData[timestampKey] || '']; return `"${row.join('","')}"`; }).filter(Boolean); const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...dataRows].join('\n'); const encodedUri = encodeURI(csvContent); const link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `as_study_dashboard_export_${new Date().toISOString().slice(0,10)}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); showToast('✅ CSV data exported!', 'success'); } catch (e) { console.error("CSV Export Failed:", e); showToast('❌ CSV export failed!', 'error'); } }
+        function importFullBackup(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { try { pendingImportData = JSON.parse(e.target.result); importConfirmModal?.classList.add('visible'); } catch (err) { showToast('❌ Invalid JSON file!', 'error'); console.error("Import failed:", err); } }; reader.readAsText(file); event.target.value = ''; }
+        function printReport() { const printContainer = document.getElementById('print-container'); if (!printContainer) return; const composite = calculateComposite(); let reportHTML = `<div class="print-card"><h2>Overall Progress Report</h2><p>Generated on: ${new Date().toLocaleDateString('bn-BD')}</p><h3>Weighted Progress: ${composite.composite.toFixed(2)}%</h3></div>`; Object.keys(syllabusData).forEach(subjectKey => { const subject = syllabusData[subjectKey]; const mainProg = calculateProgress(subjectKey, mainStudyItems); const revProg = calculateProgress(subjectKey, revisionItems); const examProg = calculateProgress(subjectKey, examItems); const qbProg = calculateProgress(subjectKey, qbItems); reportHTML += `<div class="print-card"><h3>${subject.name}</h3><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;"><div class="print-progress-item"><strong>Main Study:</strong> ${mainProg.overall.toFixed(1)}%</div><div class="print-progress-item"><strong>Revision:</strong> ${revProg.overall.toFixed(1)}%</div><div class="print-progress-item"><strong>Exams:</strong> ${examProg.overall.toFixed(1)}%</div><div class="print-progress-item"><strong>Q-Banks:</strong> ${qbProg.overall.toFixed(1)}%</div></div></div>`; }); printContainer.innerHTML = reportHTML; window.print(); printContainer.innerHTML = ''; }
 
         function renderAll() { 
-            try { 
-                renderSubjectSelector(); 
-                renderProgressCards(); 
-                renderSyllabusContent(); 
-                renderStudyStreak(); 
-                renderGoalsCard(); 
-                // updateSyncQueueCount() removed
-            } 
-            catch (e) { 
-                console.error("RenderAll failed:", e); 
-                const container = document.getElementById('app-container'); 
-                if (container) container.innerHTML = `<div class="text-red-500 p-4"><b>ত্রুটি:</b> ড্যাশবোর্ড লোড করা যায়নি। বিস্তারিত জানতে কনসোল দেখুন।</div>`; 
-            } 
+            try { renderSubjectSelector(); renderProgressCards(); renderSyllabusContent(); renderStudyStreak(); updateSyncQueueCount(); } 
+            catch (e) { console.error("RenderAll failed:", e); const container = document.getElementById('app-container'); if (container) container.innerHTML = `<div class="text-red-500 p-4"><b>ত্রুটি:</b> ড্যাশবোর্ড লোড করা যায়নি। বিস্তারিত জানতে কনসোল দেখুন।</div>`; } 
         }
         
         async function startApp() {
-            // Modal variables are removed
-            const syncStatusEl = document.getElementById('connection-status'); 
-            const loadingIndicator = document.getElementById('loading-indicator'); 
-            const mainContentGrid = document.getElementById('main-content-grid');
-            if (!syncStatusEl || !loadingIndicator || !mainContentGrid) { 
-                if(loadingIndicator) loadingIndicator.innerHTML = '<div class="text-red-500 p-4"><b>Initialization Error:</b> Critical elements missing.</div>'; 
-                return; 
-            }
-            syncStatusEl.title = 'Initializing...'; 
-            syncStatusEl.className = 'w-3 h-3 rounded-full status-idle';
+            noteModalOverlay = document.getElementById('note-modal-overlay'); noteModalTitle = document.getElementById('note-modal-title'); noteTextarea = document.getElementById('note-textarea'); syncModalOverlay = document.getElementById('sync-modal-overlay'); importConfirmModal = document.getElementById('import-confirm-modal-overlay');
+            const syncStatusEl = document.getElementById('connection-status'); const loadingIndicator = document.getElementById('loading-indicator'); const mainContentGrid = document.getElementById('main-content-grid');
+            if (!syncStatusEl || !loadingIndicator || !mainContentGrid) { if(loadingIndicator) loadingIndicator.innerHTML = '<div class="text-red-500 p-4"><b>Initialization Error:</b> Critical elements missing.</div>'; return; }
+            syncStatusEl.title = 'Initializing...'; syncStatusEl.className = 'w-3 h-3 rounded-full status-idle';
             
-            // Migration logic (remains important for reading old data structures)
+            // Migration logic with version flag
             const runDataMigration = (data) => {
                 if (!data || data.dataVersion >= CURRENT_DATA_VERSION) {
                     return { ...data, needsUpdate: false };
                 }
                 console.log(`Running migration from version ${data.dataVersion || 'pre-18.3'} to ${CURRENT_DATA_VERSION}`);
-                if (data.goals) {
-                    if (!Array.isArray(data.goals)) {
-                        const allGoals = [...(data.goals?.today || []), ...(data.goals?.weekly || [])];
-                        data.goals = Array.from(new Map(allGoals.map(item => [item.id, item])).values());
-                    }
-                    data.goals.forEach(goal => {
-                        if (goal.completed !== undefined) {
-                            goal.status = goal.completed ? 5 : 0;
-                            if (goal.completed) goal.completedAt = goal.completedAt || goal.createdAt || new Date().toISOString();
-                            delete goal.completed;
-                        }
-                        if (goal.status === undefined) goal.status = 0;
-                    });
-                } else {
-                    data.goals = [];
-                }
+                
                 data.dataVersion = CURRENT_DATA_VERSION;
                 return { ...data, needsUpdate: true };
             };
 
-            // IndexedDB logic is removed. We use defaults and wait for Firebase.
             try {
+                await openDB();
+                syncStatusEl.title = 'Loading cache...';
+                const cachedData = await getFromDB('userData', 'main');
+                
+                if (cachedData && cachedData.value) {
+                    const { needsUpdate, ...migratedData } = runDataMigration(cachedData.value);
+                    state.userData = migratedData;
+                    if (needsUpdate) {
+                        console.log("Local data migrated. Saving back to IndexedDB.");
+                        await writeToDB('userData', { id: 'main', value: state.userData });
+                    }
+                }
+
+                const [theme, viewMode, soundVolume, lastSynced] = await Promise.all([ (await getFromDB('userData', 'setting_theme'))?.value, (await getFromDB('userData', 'setting_viewMode'))?.value, (await getFromDB('userData', 'setting_soundVolume'))?.value, (await getFromDB('userData', 'setting_lastSynced'))?.value ]);
+                state.settings.theme = theme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                state.settings.viewMode = viewMode || 'mobile';
+                state.settings.soundVolume = soundVolume !== undefined ? parseFloat(soundVolume) : 0.3;
                 updateSoundVolume(state.settings.soundVolume);
-                // No settings loaded from DB, just use defaults.
+                document.getElementById('last-synced-time').textContent = lastSynced || 'Never';
+                
             } catch (e) {
-                console.error("Settings init failed:", e);
+                console.error("DB/Cache Load failed:", e);
+                syncStatusEl.title = 'DB Error'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
             }
             
-            // Initial render (will be empty, but sets up the structure)
             try {
                 renderAll();
                 loadingIndicator.style.display = 'none';
@@ -838,68 +553,60 @@
                 loadingIndicator.innerHTML = '<div class="text-red-500 p-4"><b>Render Error:</b> Could not display dashboard. Check console.</div>';
             }
 
-            // Firebase connection is the MOST important part
             if(db && userDocRef) {
                 syncStatusEl.title = 'Connecting...';
+                let isFirstSnapshot = true;
                 try {
                     onSnapshot(userDocRef, async (snap) => {
+                        if (snap.metadata.hasPendingWrites && state.isInitialized) return;
+                        
                         if (snap.exists()) {
                             const firestoreData = snap.data();
                             const { needsUpdate, ...migratedData } = runDataMigration(firestoreData);
 
-                            state.userData = migratedData; // Load data from Firebase
-                            
-                            if (state.isInitialized) {
-                                renderAll(); // Re-render page with the new data
-                                showToast('🔄 অগ্রগতি সিঙ্ক হয়েছে!', 'success');
+                            // Only update if remote data is different
+                            if (JSON.stringify(state.userData) !== JSON.stringify(migratedData) || isFirstSnapshot) {
+                                state.userData = migratedData;
+                                try {
+                                    await writeToDB('userData', { id: 'main', value: state.userData });
+                                    if(needsUpdate) console.log("Firestore data was migrated and saved locally.");
+                                } catch (e) {
+                                    console.error("Failed to write snapshot data to IDB:", e);
+                                    if (e.message === 'QuotaExceededError') showToast('❌ Storage full! Cannot save synced data.', 'error');
+                                }
+                                if (state.isInitialized) {
+                                    renderAll();
+                                    state.lastCompositeProgress = calculateComposite().composite;
+                                    if(!isFirstSnapshot) showToast('🔄 ক্লাউড থেকে ডেটা সফলভাবে সিঙ্ক হয়েছে!', 'success');
+                                }
                             }
-                            syncStatusEl.title = `Synced: ${new Date().toLocaleTimeString()}`; 
-                            syncStatusEl.className = 'w-3 h-3 rounded-full status-online';
-                        } else { 
-                            console.warn("User document doesn't exist in Firestore."); 
-                            syncStatusEl.title = 'No Data'; 
-                            syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
-                        }
+                        } else { console.warn("User document doesn't exist in Firestore."); }
+                        
+                        isFirstSnapshot = false;
+                        syncPendingWrites();
                     }, (error) => {
                         console.error("Firestore onSnapshot error:", error);
-                        syncStatusEl.title = 'Sync Failed'; 
-                        syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
+                        syncStatusEl.title = 'Sync Failed'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
                     });
-                } catch(e) { 
-                    console.error("onSnapshot setup failed:", e); 
-                    syncStatusEl.title = 'Firebase Error'; 
-                    syncStatusEl.className = 'w-3 h-3 rounded-full status-error';
-                }
-            } else { 
-                syncStatusEl.title = 'Firebase Failed'; 
-                syncStatusEl.className = 'w-3 h-3 rounded-full status-error'; 
-            }
+                } catch(e) { console.error("onSnapshot setup failed:", e); syncStatusEl.title = 'Firebase Error'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error';}
+            } else { syncStatusEl.title = 'Firebase Failed'; syncStatusEl.className = 'w-3 h-3 rounded-full status-error'; }
             
             if (state.isInitialized) {
-                setupEventHandlers(); // Sets up info buttons
-                // setupModalEventHandlers() is removed
+                setupEventHandlers();
+                setupModalEventHandlers();
                 setupInfoButtons();
                 startCountdown();
                 setupViewToggle();
                 setupThemeToggle();
                 const banner = document.getElementById('offline-banner');
-                window.addEventListener('online', () => { 
-                    if (banner) banner.style.display = 'none'; 
-                    syncStatusEl.title = 'Online'; 
-                    syncStatusEl.className = 'w-3 h-3 rounded-full status-online';
-                });
-                window.addEventListener('offline', () => { 
-                    if (banner) banner.style.display = 'block'; 
-                    if (syncStatusEl) { 
-                        syncStatusEl.title = 'Offline'; 
-                        syncStatusEl.className = 'w-3 h-3 rounded-full status-offline'; 
-                    } 
-                });
+                window.addEventListener('online', () => { if (banner) banner.style.display = 'none'; try { syncPendingWrites(); } catch(e) { console.warn('syncPendingWrites failed on online event', e); } });
+                window.addEventListener('offline', () => { if (banner) banner.style.display = 'block'; if (syncStatusEl) { syncStatusEl.title = 'Offline'; syncStatusEl.className = 'w-3 h-3 rounded-full status-offline'; } });
                 if (!navigator.onLine && banner) banner.style.display = 'block';
+                syncPendingWrites();
                 window.addEventListener('beforeunload', () => clearInterval(countdownInterval));
             }
         }
         startApp();
     </script>
 </body>
-            </html>
+</html>
